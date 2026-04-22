@@ -7,14 +7,15 @@ use App\Models\Product;
 class ProductController extends Controller
 {
     public function index()
-    {
-        $products = Product::all();
-        return view('home', compact('products'));
-    }
+{
+    $products = \App\Models\Product::all();
+    return view('home', compact('products'));
+}
 
-    public function show($id)
-    {
-        $product = Product::findOrFail($id);
-        return view('detail', compact('product'));
-    }
+   public function show($id)
+{
+    $product = \App\Models\Product::findOrFail($id);
+
+    return view('product-detail', compact('product'));
+}
 }
