@@ -13,7 +13,10 @@ class Product extends Model
         'stock',
         'category_id',
         'image',
-        'description'
+        'description',
+        'socket',
+        'ram_type',
+        'watt',
     ];
 
     // Relasi ke Category

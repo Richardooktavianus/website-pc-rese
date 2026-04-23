@@ -24,13 +24,15 @@
     <div class="flex items-center gap-4">
 
         <!-- CART -->
-        <a href="/cart" class="relative hover:scale-110 transition">
-            🛒
-            @if(session('cart'))
-                <span class="absolute -top-2 -right-2 bg-red-500 text-xs px-2 rounded-full">
-                    {{ count(session('cart')) }}
-                </span>
-            @endif
+        <a href="/cart" class="relative inline-block">
+            <span class="text-2xl">🛒</span>
+
+            @php $cartCount = count(session('cart', [])); @endphp
+
+            <span id="cart-count"
+                class="absolute -top-2 -right-3 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                {{ $cartCount }}
+            </span>
         </a>
 
         <!-- LOGIN -->

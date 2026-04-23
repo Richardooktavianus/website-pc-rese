@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-
+use App\Filament\Widgets\StatsOverview;
 class AppServiceProvider extends ServiceProvider
 {
     /**

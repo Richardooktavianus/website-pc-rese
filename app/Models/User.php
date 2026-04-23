@@ -23,14 +23,13 @@ class User extends Authenticatable implements FilamentUser
         'remember_token',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+    // 🔥 FIX: gunakan property $casts (bukan method)
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
 
+    // 🔥 akses filament
     public function canAccessPanel(Panel $panel): bool
     {
         return true;

@@ -3,24 +3,28 @@
 namespace App\Filament\Resources\Products\Schemas;
 
 use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Textarea;
 
 class ProductForm
 {
     public static function configure(Schema $schema): Schema
     {
-        return $schema
-            ->components([
-                Forms\Components\TextInput::make('name')->required(),
-                Forms\Components\TextInput::make('brand')->required(),
-                Forms\Components\TextInput::make('price')->numeric()->required(),
-                Forms\Components\TextInput::make('stock')->numeric()->required(),
-                Forms\Components\Select::make('category_id')
-                    ->relationship('category', 'name')
-                    ->required(),
+        return $schema->components([
+            TextInput::make('name')->required(),
+            TextInput::make('brand')->required(),
+            TextInput::make('price')->numeric()->required(),
+            TextInput::make('stock')->numeric()->required(),
 
-                Forms\Components\FileUpload::make('image')->image(),
+            Select::make('category_id')
+                ->relationship('category', 'name')
+                ->required(),
 
-                Forms\Components\Textarea::make('description'),
-            ]);
+            FileUpload::make('image')->image(),
+
+            Textarea::make('description'),
+        ]);
     }
 }
