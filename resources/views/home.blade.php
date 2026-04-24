@@ -14,8 +14,8 @@
 
     <!-- SEARCH -->
     <form class="w-1/3">
-        <input 
-            class="w-full px-4 py-2 rounded-full text-black" 
+        <input
+            class="w-full px-4 py-2 rounded-full text-black"
             placeholder="Search produk..."
         >
     </form>
@@ -41,7 +41,7 @@
         </a>
 
         <!-- REGISTER -->
-        <a href="/register" 
+        <a href="/register"
            class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded text-white transition">
             Register
         </a>
@@ -80,13 +80,13 @@
     </div>
 
     <!-- BUTTON LEFT -->
-    <button onclick="prevSlide()" 
+    <button onclick="prevSlide()"
         class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 px-3 py-1 rounded">
         ‹
     </button>
 
     <!-- BUTTON RIGHT -->
-    <button onclick="nextSlide()" 
+    <button onclick="nextSlide()"
         class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 px-3 py-1 rounded">
         ›
     </button>
@@ -125,7 +125,7 @@
             <!-- IMAGE -->
             <a href="/product/{{ $product->id }}">
                 @if($product->image)
-                    <img src="{{ asset('storage/'.$product->image) }}" 
+                    <img src="{{ asset('storage/'.$product->image) }}"
                          class="h-32 w-full object-cover rounded mb-3">
                 @else
                     <div class="h-32 bg-gray-400 rounded mb-3 flex items-center justify-center">
@@ -147,14 +147,12 @@
             </p>
 
             <!-- ADD TO CART -->
-            <form method="POST" action="/cart/add">
-                @csrf
-                <input type="hidden" name="product_id" value="{{ $product->id }}">
-
-                <button class="w-full bg-blue-500 hover:bg-blue-600 p-2 rounded">
-                    + Keranjang
-                </button>
-            </form>
+            <a href="/product/{{ $product->id }}"
+   class="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600
+          text-white py-2 rounded-lg">
+    <span>👁</span>
+    <span>View Produk</span>
+</a>
 
         </div>
         @empty
