@@ -12,10 +12,16 @@ class ProductController extends Controller
     return view('home', compact('products'));
 }
 
-   public function show($id)
+public function show($id)
 {
-    $product = \App\Models\Product::findOrFail($id);
+    $product = Product::findOrFail($id);
 
-    return view('product-detail', compact('product'));
+    // ambil produk lain (random, selain yang sedang dibuka)
+    $recommended = Product::where('id', '!=', $id)
+        ->inRandomOrder()
+        ->take(4)
+        ->get();
+
+    return view('product-detail', compact('product', 'recommended'));
 }
 }

@@ -47,6 +47,52 @@
     </div>
 
 </div>
+<!-- REKOMENDASI PRODUK -->
+<div class="mt-12">
+
+    <h2 class="text-2xl font-bold mb-6">
+        🔥 Produk Rekomendasi
+    </h2>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+
+        @foreach($recommended as $item)
+        <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:scale-105 transition">
+
+            <!-- IMAGE -->
+            <div class="h-40 bg-gray-700 flex items-center justify-center">
+                @if($item->image)
+                    <img src="{{ asset('storage/' . $item->image) }}" 
+                         class="h-full object-cover">
+                @else
+                    <span class="text-gray-400">No Image</span>
+                @endif
+            </div>
+
+            <!-- CONTENT -->
+            <div class="p-4">
+                <h3 class="font-semibold text-sm mb-1">
+                    {{ $item->name }}
+                </h3>
+
+                <p class="text-green-400 font-bold mb-3">
+                    Rp {{ number_format($item->price) }}
+                </p>
+
+                <!-- BUTTON -->
+                <a href="/product/{{ $item->id }}" 
+                   class="block text-center bg-green-500 hover:bg-green-600 
+                          py-2 rounded-lg text-sm">
+                    👁 Lihat Produk
+                </a>
+            </div>
+
+        </div>
+        @endforeach
+
+    </div>
+
+</div>
 
 </body>
 </html>
