@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,7 +19,7 @@
       --bg-surface: #1c2130;
       --text-primary: #f0f2f8;
       --text-muted: #7a859e;
-      --border: rgba(255,255,255,0.07);
+      --border: rgba(255, 255, 255, 0.07);
     }
 
     * {
@@ -35,7 +36,10 @@
       line-height: 1.5;
     }
 
-    h1, h2, h3, .logo {
+    h1,
+    h2,
+    h3,
+    .logo {
       font-family: 'Rajdhani', sans-serif;
     }
 
@@ -44,7 +48,7 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(13,15,20,0.9);
+      background: rgba(13, 15, 20, 0.9);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       padding: 0 1rem;
@@ -121,7 +125,8 @@
       align-items: center;
     }
 
-    .btn-login, .btn-register {
+    .btn-login,
+    .btn-register {
       height: 36px;
       padding: 0 14px;
       border-radius: 8px;
@@ -199,58 +204,108 @@
     .footer-links a:hover {
       color: var(--accent);
     }
+
+    .btn-profile {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0 12px 0 6px;
+      height: 36px;
+      text-decoration: none;
+      transition: border-color 0.2s;
+    }
+
+    .btn-profile:hover {
+      border-color: rgba(0, 229, 160, 0.4);
+    }
+
+    .profile-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      background: var(--accent);
+      color: #0d1a14;
+      font-size: 12px;
+      font-weight: 700;
+      font-family: 'Rajdhani', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .profile-name {
+      font-size: 13px;
+      color: var(--text-primary);
+      font-weight: 500;
+      max-width: 80px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   </style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar">
-  <a href="/" class="logo">⚡ PC<span style="color:white">Rakit</span></a>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="/" class="logo">⚡ PC<span style="color:white">Rakit</span></a>
 
-  <div class="search-bar">
-    <span class="search-icon">🔍</span>
-    <input type="text" placeholder="Cari komponen...">
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Cari komponen...">
+    </div>
+
+    <div class="nav-actions">
+      <a href="/cart" class="cart-btn">🛒
+        <span class="cart-badge">3</span>
+      </a>
+      @auth
+      <a href="/profile" class="btn-profile">
+        <span class="profile-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
+        <span class="profile-name">{{ auth()->user()->name }}</span>
+      </a>
+      @else
+      <a href="/login" class="btn-login">Login</a>
+      <a href="/register" class="btn-register">Daftar</a>
+      @endauth
+    </div>
+  </nav>
+
+  <!-- SUBNAV -->
+  <!-- SUBNAV -->
+  <div class="subnav">
+    <a href="{{ url('/') }}" class="{{ request()->is('/') ? 'active' : '' }}">Home</a>
+
+    <a href="{{ url('/transaksi') }}" class="{{ request()->is('transaksi*') ? 'active' : '' }}">Transaksi</a>
+
+    <a href="{{ url('/builder') }}" class="{{ request()->is('builder*') ? 'active' : '' }}">Builder</a>
+
+    <a href="{{ url('/cart') }}" class="{{ request()->is('cart*') ? 'active' : '' }}">Keranjang</a>
+
+    <a href="{{ url('/promo') }}" class="{{ request()->is('promo*') ? 'active' : '' }}">Promo</a>
   </div>
 
-  <div class="nav-actions">
-    <a href="/cart" class="cart-btn">🛒
-      <span class="cart-badge">3</span>
-    </a>
-    <a href="/login" class="btn-login">Login</a>
-    <a href="/register" class="btn-register">Daftar</a>
-  </div>
-</nav>
+  <!-- CONTENT -->
+  <main>
+    @yield('content')
+  </main>
 
-<!-- SUBNAV -->
-<!-- SUBNAV -->
-<div class="subnav">
-  <a href="{{ url('/') }}" class="{{ request()->is('/') ? 'active' : '' }}">Home</a>
-
-  <a href="{{ url('/transaksi') }}" class="{{ request()->is('transaksi*') ? 'active' : '' }}">Transaksi</a>
-
-  <a href="{{ url('/builder') }}" class="{{ request()->is('builder*') ? 'active' : '' }}">Builder</a>
-
-  <a href="{{ url('/cart') }}" class="{{ request()->is('cart*') ? 'active' : '' }}">Keranjang</a>
-
-  <a href="{{ url('/promo') }}" class="{{ request()->is('promo*') ? 'active' : '' }}">Promo</a>
-</div>
-
-<!-- CONTENT -->
-<main>
-  @yield('content')
-</main>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-links">
-    <a href="/tentang">Tentang</a>
-    <a href="/faq">FAQ</a>
-    <a href="/kontak">Kontak</a>
-    <a href="/privacy">Privasi</a>
-  </div>
-  <div>© 2026 PC Rakit Store</div>
-</footer>
-@yield('scripts')
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-links">
+      <a href="/tentang">Tentang</a>
+      <a href="/faq">FAQ</a>
+      <a href="/kontak">Kontak</a>
+      <a href="/privacy">Privasi</a>
+    </div>
+    <div>© 2026 PC Rakit Store</div>
+  </footer>
+  @yield('scripts')
 </body>
+
 </html>
