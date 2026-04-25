@@ -17,6 +17,9 @@ use App\Http\Controllers\AuthController;
 Route::get('/', [ProductController::class, 'index']);
 Route::get('/product/{id}', [ProductController::class, 'show']);
 
+// halaman komponen
+Route::get('/komponen', [ProductController::class, 'komponen']);
+
 // builder boleh dilihat tanpa login
 Route::get('/builder', [BuilderController::class, 'index']);
 Route::post('/builder/calc', [BuilderController::class, 'calc']);
@@ -60,7 +63,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/builder/add-to-cart', [BuilderController::class, 'addToCart']);
 
     // CHECKOUT
-    Route::get('/checkout', [CheckoutController::class, 'index']);
+    Route::get('/transaksi', [CheckoutController::class, 'index']);
     Route::post('/checkout/process', [CheckoutController::class, 'process']);
 
     // LOGOUT
