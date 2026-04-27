@@ -221,34 +221,34 @@
 {{-- BANNER SLIDER --}}
 <div class="banner-wrap">
   <div class="banner-track" id="bannerTrack">
-    <div class="banner-slide b1">
-      <div class="banner-content">
-        <div class="banner-sub">Spesial Bulan Ini</div>
-        <div class="banner-title">Rakit PC Impianmu</div>
-        <div class="banner-tag">Mulai dari Rp 5 Juta</div>
-      </div>
+
+    {{-- Slide 1 --}}
+    <div class="banner-slide">
+      <img src="{{ asset('images/banner/banner1.png') }}" alt="Rakit PC Impianmu" class="banner-img">
+      <div class="banner-overlay"></div>
     </div>
-    <div class="banner-slide b2">
-      <div class="banner-content">
-        <div class="banner-sub">Komponen Terbaru</div>
-        <div class="banner-title">GPU RTX Series 50</div>
-        <div class="banner-tag">Stok Terbatas!</div>
-      </div>
+
+    {{-- Slide 2 --}}
+    <div class="banner-slide">
+      <img src="{{ asset('images/banner/banner2.png') }}" alt="GPU RTX Series 50" class="banner-img">
+      <div class="banner-overlay"></div>
     </div>
-    <div class="banner-slide b3">
-      <div class="banner-content">
-        <div class="banner-sub">Garansi Resmi</div>
-        <div class="banner-title">Prosesor AMD Ryzen 9</div>
-        <div class="banner-tag">Diskon 15%</div>
-      </div>
+
+    {{-- Slide 3 --}}
+    <div class="banner-slide">
+      <img src="{{ asset('images/banner/banner3.png') }}" alt="Prosesor AMD Ryzen 9" class="banner-img">
+      <div class="banner-overlay"></div>
     </div>
+
   </div>
-  <button class="banner-btn prev">&#8249;</button>
-  <button class="banner-btn next">&#8250;</button>
-  <div class="banner-dots">
-    <div class="dot active"></div>
-    <div class="dot"></div>
-    <div class="dot"></div>
+
+  <button class="banner-btn prev" onclick="prevSlide()">&#8249;</button>
+  <button class="banner-btn next" onclick="nextSlide()">&#8250;</button>
+
+  <div class="banner-dots" id="bannerDots">
+    <div class="dot active" onclick="goSlide(0)"></div>
+    <div class="dot" onclick="goSlide(1)"></div>
+    <div class="dot" onclick="goSlide(2)"></div>
   </div>
 </div>
 
