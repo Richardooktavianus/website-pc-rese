@@ -7,6 +7,7 @@ use App\Http\Controllers\BuilderController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\MapController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +30,10 @@ Route::get('/user', [ProductController::class, 'user']);
 // CHAT (AMBIL DATA)
 Route::get('/chat/get', [ChatController::class, 'get']);
 
+Route::get('/map', [MapController::class, 'index']);
+// Tambahkan di bagian PUBLIC ROUTE
+// Tambahkan di bagian PUBLIC ROUTE
+Route::get('/api/markers', [MapController::class, 'getMarkers']);
 
 /*
 |--------------------------------------------------------------------------
@@ -80,5 +85,5 @@ Route::middleware('auth')->group(function () {
     Route::post('/checkout/process', [CheckoutController::class, 'process']);
 
     // LOGOUT
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });

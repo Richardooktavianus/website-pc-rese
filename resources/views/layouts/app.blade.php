@@ -7,11 +7,15 @@
   <title>@yield('title', 'PC Rakit Store')</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=DM+Sans:wght@400;500;600&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  
+  {{-- Leaflet CSS --}}
+  <link rel='stylesheet' href='https://unpkg.com/leaflet@1.8.0/dist/leaflet.css' crossorigin='' />
+  
   <script src="https://cdn.tailwindcss.com"></script>
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
   <style>
-    /* ========== GLOBAL THEME (YANG KAMU LUPA) ========== */
+    /* ========== GLOBAL THEME ========== */
     :root {
       --accent: #00E5A0;
       --accent-dim: #00b87c;
@@ -37,10 +41,7 @@
       line-height: 1.5;
     }
 
-    h1,
-    h2,
-    h3,
-    .logo {
+    h1, h2, h3, .logo {
       font-family: 'Rajdhani', sans-serif;
     }
 
@@ -126,8 +127,7 @@
       align-items: center;
     }
 
-    .btn-login,
-    .btn-register {
+    .btn-login, .btn-register {
       height: 36px;
       padding: 0 14px;
       border-radius: 8px;
@@ -166,8 +166,7 @@
       white-space: nowrap;
     }
 
-    .subnav a.active,
-    .subnav a:hover {
+    .subnav a.active, .subnav a:hover {
       color: var(--accent);
       border-bottom: 2px solid var(--accent);
     }
@@ -179,7 +178,134 @@
       padding: 16px;
     }
 
-    /* ========== FOOTER (YANG KAMU KOSONGKAN) ========== */
+    /* ========== STORE LOCATION MAP ========== */
+    .map-section {
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+      padding: 32px 24px;
+    }
+
+    .map-header {
+      max-width: 1200px;
+      margin: 0 auto 20px;
+      text-align: center;
+    }
+
+    .map-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+
+    .map-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .map-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    #storeMap {
+      width: 100%;
+      height: 450px;
+      background: var(--bg-surface);
+    }
+
+    @media (max-width: 768px) {
+      .map-section {
+        padding: 24px 16px;
+      }
+
+      .map-title {
+        font-size: 1.5rem;
+      }
+
+      #storeMap {
+        height: 350px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      #storeMap {
+        height: 280px;
+      }
+    }
+
+    /* Leaflet popup styling untuk tema dark */
+    .leaflet-popup-content-wrapper {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    .leaflet-popup-tip {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+    }
+
+    .leaflet-container a.leaflet-popup-close-button {
+      color: var(--text-primary);
+      font-size: 20px;
+      padding: 4px 8px;
+    }
+
+    .leaflet-container a.leaflet-popup-close-button:hover {
+      color: var(--accent);
+    }
+
+    .store-popup {
+      padding: 4px;
+    }
+
+    .store-popup-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .store-popup-address {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Leaflet controls styling */
+    .leaflet-control-zoom a {
+      background: var(--bg-card) !important;
+      color: var(--text-primary) !important;
+      border-color: var(--border) !important;
+    }
+
+    .leaflet-control-zoom a:hover {
+      background: var(--bg-surface) !important;
+      border-color: var(--accent) !important;
+    }
+
+    .leaflet-control-attribution {
+      background: rgba(22, 26, 36, 0.8) !important;
+      color: var(--text-muted) !important;
+      font-size: 10px !important;
+    }
+
+    .leaflet-control-attribution a {
+      color: var(--accent) !important;
+    }
+
+    /* ========== FOOTER ========== */
     footer {
       background: var(--bg-card);
       border-top: 1px solid var(--border);
@@ -204,48 +330,6 @@
 
     .footer-links a:hover {
       color: var(--accent);
-    }
-
-    .btn-profile {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0 12px 0 6px;
-      height: 36px;
-      text-decoration: none;
-      transition: border-color 0.2s;
-    }
-
-    .btn-profile:hover {
-      border-color: rgba(0, 229, 160, 0.4);
-    }
-
-    .profile-avatar {
-      width: 26px;
-      height: 26px;
-      border-radius: 6px;
-      background: var(--accent);
-      color: #0d1a14;
-      font-size: 12px;
-      font-weight: 700;
-      font-family: 'Rajdhani', sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .profile-name {
-      font-size: 13px;
-      color: var(--text-primary);
-      font-weight: 500;
-      max-width: 80px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
     }
 
     .btn-user {
@@ -291,7 +375,6 @@
       text-overflow: ellipsis;
     }
 
-    /* Sembunyikan nama di layar sangat kecil */
     @media (max-width: 400px) {
       .user-name {
         display: none;
@@ -302,7 +385,7 @@
       }
     }
 
-    /* FLOAT BUTTON */
+    /* ========== CUSTOMER SERVICE FLOAT BUTTON ========== */
     #csButton {
       position: fixed;
       bottom: 24px;
@@ -327,7 +410,6 @@
       box-shadow: 0 6px 24px rgba(0, 229, 160, 0.5);
     }
 
-    /* POPUP */
     #csPopup {
       position: fixed;
       bottom: 90px;
@@ -343,7 +425,6 @@
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     }
 
-    /* HEADER */
     .cs-header {
       display: flex;
       align-items: center;
@@ -403,7 +484,6 @@
       color: #f0f2f8;
     }
 
-    /* CHAT BODY */
     .cs-chat {
       height: 220px;
       overflow-y: auto;
@@ -427,7 +507,6 @@
       border-radius: 4px;
     }
 
-    /* MESSAGES */
     .cs-msg {
       display: flex;
     }
@@ -436,12 +515,9 @@
       justify-content: flex-end;
     }
 
-    /* user → kanan */
     .cs-msg-admin {
       justify-content: flex-start;
     }
-
-    /* admin → kiri */
 
     .cs-bubble {
       max-width: 80%;
@@ -466,7 +542,6 @@
       border-bottom-left-radius: 4px;
     }
 
-    /* INPUT */
     .cs-input-area {
       display: flex;
       align-items: center;
@@ -521,7 +596,6 @@
       transform: scale(0.96);
     }
 
-    /* Responsive - layar kecil */
     @media (max-width: 400px) {
       #csPopup {
         right: 12px;
@@ -532,49 +606,50 @@
     }
   </style>
 </head>
-<!-- FLOATING CS BUTTON -->
-<div id="csButton">
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-  </svg>
-</div>
-
-<!-- POPUP CUSTOMER SERVICE -->
-<div id="csPopup">
-  <div class="cs-header">
-    <div class="cs-header-left">
-      <div class="cs-avatar">CS</div>
-      <div>
-        <div class="cs-header-name">Customer Service</div>
-        <div class="cs-header-status">● online</div>
-      </div>
-    </div>
-    <button class="cs-close-btn" onclick="toggleCS()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-        <line x1="18" y1="6" x2="6" y2="18" />
-        <line x1="6" y1="6" x2="18" y2="18" />
-      </svg>
-    </button>
-  </div>
-
-  <div class="cs-chat" id="csChat">
-    <div class="cs-msg cs-msg-admin">
-      <div class="cs-bubble">Halo! 👋 Ada yang bisa kami bantu?</div>
-    </div>
-  </div>
-
-  <div class="cs-input-area">
-    <input type="text" id="csInput" placeholder="Ketik pesan..." />
-    <button onclick="sendMessage()" class="cs-send-btn">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="22" y1="2" x2="11" y2="13" />
-        <polygon points="22 2 15 22 11 13 2 9 22 2" />
-      </svg>
-    </button>
-  </div>
-</div>
 
 <body>
+
+  <!-- FLOATING CS BUTTON -->
+  <div id="csButton">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+    </svg>
+  </div>
+
+  <!-- POPUP CUSTOMER SERVICE -->
+  <div id="csPopup">
+    <div class="cs-header">
+      <div class="cs-header-left">
+        <div class="cs-avatar">CS</div>
+        <div>
+          <div class="cs-header-name">Customer Service</div>
+          <div class="cs-header-status">● online</div>
+        </div>
+      </div>
+      <button class="cs-close-btn" onclick="toggleCS()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="cs-chat" id="csChat">
+      <div class="cs-msg cs-msg-admin">
+        <div class="cs-bubble">Halo! 👋 Ada yang bisa kami bantu?</div>
+      </div>
+    </div>
+
+    <div class="cs-input-area">
+      <input type="text" id="csInput" placeholder="Ketik pesan..." />
+      <button onclick="sendMessage()" class="cs-send-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13" />
+          <polygon points="22 2 15 22 11 13 2 9 22 2" />
+        </svg>
+      </button>
+    </div>
+  </div>
 
   <!-- NAVBAR -->
   <nav class="navbar">
@@ -610,16 +685,11 @@
   </nav>
 
   <!-- SUBNAV -->
-  <!-- SUBNAV -->
   <div class="subnav">
     <a href="{{ url('/') }}" class="{{ request()->is('/') ? 'active' : '' }}">Home</a>
-
     <a href="{{ url('/transaksi') }}" class="{{ request()->is('transaksi*') ? 'active' : '' }}">Transaksi</a>
-
     <a href="{{ url('/builder') }}" class="{{ request()->is('builder*') ? 'active' : '' }}">Builder</a>
-
     <a href="{{ url('/cart') }}" class="{{ request()->is('cart*') ? 'active' : '' }}">Keranjang</a>
-
     <a href="{{ url('/promo') }}" class="{{ request()->is('promo*') ? 'active' : '' }}">Promo</a>
   </div>
 
@@ -627,6 +697,17 @@
   <main>
     @yield('content')
   </main>
+
+  <!-- STORE LOCATION MAP -->
+  <section class="map-section">
+    <div class="map-header">
+      <h2 class="map-title">📍 Lokasi Toko Kami</h2>
+      <p class="map-subtitle">Kunjungi toko kami untuk konsultasi langsung dan lihat produk</p>
+    </div>
+    <div class="map-container">
+      <div id="storeMap"></div>
+    </div>
+  </section>
 
   <!-- FOOTER -->
   <footer>
@@ -638,79 +719,178 @@
     </div>
     <div>© 2026 PC Rakit Store</div>
   </footer>
+
+  {{-- Leaflet JS --}}
+  <script src='https://unpkg.com/leaflet@1.8.0/dist/leaflet.js' crossorigin=''></script>
+
+  {{-- Scripts from child views --}}
   @yield('scripts')
-</body>
 
-</html>
+  {{-- Main Application Scripts --}}
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // ===== CUSTOMER SERVICE POPUP =====
+      const btn = document.getElementById('csButton');
+      const popup = document.getElementById('csPopup');
 
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-
-    const btn = document.getElementById('csButton');
-    const popup = document.getElementById('csPopup');
-
-    btn.addEventListener('click', function() {
-      if (popup.style.display === 'flex') {
-        popup.style.display = 'none';
-      } else {
-        popup.style.display = 'flex';
-      }
-    });
-
-  });
-
-  function toggleCS() {
-    const popup = document.getElementById('csPopup');
-    popup.style.display = popup.style.display === 'flex' ? 'none' : 'flex';
-  }
-
-  function sendMessage() {
-    const input = document.getElementById('csInput');
-    const chat = document.getElementById('csChat');
-
-    if (input.value.trim() === '') return;
-
-    // tampilkan pesan user
-    const userMsg = document.createElement('div');
-    userMsg.className = 'msg user';
-    userMsg.innerText = input.value;
-    chat.appendChild(userMsg);
-
-    // kirim ke backend (WAJIB kalau mau real chat)
-    fetch('/chat/send', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-      },
-      body: JSON.stringify({
-        message: input.value
-      })
-    });
-
-    input.value = '';
-    chat.scrollTop = chat.scrollHeight;
-  }
-
-  function loadChat() {
-    fetch('/chat/me')
-      .then(res => res.json())
-      .then(data => {
-        const chat = document.getElementById('csChat');
-        chat.innerHTML = '';
-        data.forEach(msg => {
-          const row = document.createElement('div');
-          row.className = 'cs-msg ' + (msg.sender === 'admin' ? 'cs-msg-admin' : 'cs-msg-user');
-          const bubble = document.createElement('div');
-          bubble.className = 'cs-bubble';
-          bubble.innerText = msg.message;
-          row.appendChild(bubble);
-          chat.appendChild(row);
-        });
-        chat.scrollTop = chat.scrollHeight;
+      btn.addEventListener('click', function() {
+        popup.style.display = popup.style.display === 'flex' ? 'none' : 'flex';
       });
-  }
 
-  // refresh tiap 2 detik
-  setInterval(loadChat, 2000);
-</script>
+      // ===== LEAFLET MAP INITIALIZATION =====
+      initStoreMap();
+
+      // ===== AUTO LOAD CHAT =====
+      loadChat();
+      setInterval(loadChat, 2000);
+    });
+
+    function toggleCS() {
+      const popup = document.getElementById('csPopup');
+      popup.style.display = popup.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('csInput');
+      const chat = document.getElementById('csChat');
+
+      if (input.value.trim() === '') return;
+
+      // Tampilkan pesan user
+      const userMsg = document.createElement('div');
+      userMsg.className = 'cs-msg cs-msg-user';
+      const bubble = document.createElement('div');
+      bubble.className = 'cs-bubble';
+      bubble.innerText = input.value;
+      userMsg.appendChild(bubble);
+      chat.appendChild(userMsg);
+
+      // Kirim ke backend
+      fetch('/chat/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+          message: input.value
+        })
+      });
+
+      input.value = '';
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function loadChat() {
+      fetch('/chat/me')
+        .then(res => res.json())
+        .then(data => {
+          const chat = document.getElementById('csChat');
+          chat.innerHTML = '';
+          data.forEach(msg => {
+            const row = document.createElement('div');
+            row.className = 'cs-msg ' + (msg.sender === 'admin' ? 'cs-msg-admin' : 'cs-msg-user');
+            const bubble = document.createElement('div');
+            bubble.className = 'cs-bubble';
+            bubble.innerText = msg.message;
+            row.appendChild(bubble);
+            chat.appendChild(row);
+          });
+          chat.scrollTop = chat.scrollHeight;
+        })
+        .catch(error => {
+          console.error('Error loading chat:', error);
+        });
+    }
+
+    // ===== STORE MAP FUNCTIONS =====
+    let storeMap, storeMarkers = [];
+
+    function initStoreMap() {
+      const mapElement = document.getElementById('storeMap');
+      if (!mapElement) return;
+
+      // Initialize map
+      storeMap = L.map('storeMap', {
+        center: [-7.7925927, 110.3658812],
+        zoom: 13,
+        zoomControl: true,
+        scrollWheelZoom: true
+      });
+
+      // Add tile layer (dark theme)
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '© OpenStreetMap contributors © CARTO',
+        maxZoom: 19
+      }).addTo(storeMap);
+
+      // Load markers from API
+      fetch('/api/markers')
+        .then(response => response.json())
+        .then(data => {
+          initStoreMarkers(data);
+        })
+        .catch(error => {
+          console.error('Error loading store markers:', error);
+        });
+    }
+
+    function initStoreMarkers(locations) {
+      locations.forEach((location, index) => {
+        // Custom icon
+        const customIcon = L.divIcon({
+          className: 'custom-marker',
+          html: `
+            <div style="
+              width: 40px;
+              height: 40px;
+              background: linear-gradient(135deg, #00e5a0, #00b87c);
+              border: 3px solid #0d1a14;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 20px;
+              box-shadow: 0 4px 12px rgba(0, 229, 160, 0.4);
+            ">
+              🏪
+            </div>
+          `,
+          iconSize: [40, 40],
+          iconAnchor: [20, 40],
+          popupAnchor: [0, -40]
+        });
+
+        const marker = L.marker(location.position, {
+          icon: customIcon
+        }).addTo(storeMap);
+
+        // Popup content
+        const popupContent = `
+          <div class="store-popup">
+            <div class="store-popup-title">⚡ PC Rakit Store</div>
+            <div class="store-popup-address">
+              ${location.label || 'Lokasi Toko'}<br>
+              <small style="color: var(--text-muted); font-size: 11px;">
+                Lat: ${location.position.lat.toFixed(5)}, 
+                Lng: ${location.position.lng.toFixed(5)}
+              </small>
+            </div>
+          </div>
+        `;
+
+        marker.bindPopup(popupContent);
+        
+        // Auto open first marker
+        if (index === 0) {
+          marker.openPopup();
+        }
+
+        storeMap.panTo(location.position);
+        storeMarkers.push(marker);
+      });
+    }
+  </script>
+
+</body>
+</html>
