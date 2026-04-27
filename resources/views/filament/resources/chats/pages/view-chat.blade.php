@@ -265,6 +265,7 @@
             setTimeout(() => { box.scrollTop = box.scrollHeight; }, 50);
         }
     });
+    
 </script>
 
 </x-filament::page>

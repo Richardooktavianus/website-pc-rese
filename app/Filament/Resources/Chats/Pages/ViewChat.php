@@ -19,12 +19,14 @@ class ViewChat extends ViewRecord
     public function mount($record): void
     {
         parent::mount($record);
+
         $this->loadMessages();
     }
 
     #[On('refreshMessages')]
     public function loadMessages(): void
     {
+        // 🔥 FIX: pakai user_id yang benar (konsisten dengan create)
         $this->messages = Chat::where('user_id', $this->record->user_id)
             ->orderBy('created_at', 'asc')
             ->get();
@@ -35,13 +37,18 @@ class ViewChat extends ViewRecord
         if (!trim($this->message)) return;
 
         Chat::create([
+            // 🔥 FIX: konsisten pakai user_id
             'user_id' => $this->record->user_id,
             'message' => $this->message,
             'sender'  => 'admin',
         ]);
 
         $this->message = '';
+
+        // refresh chat
         $this->loadMessages();
+
+        // optional event untuk scroll
         $this->dispatch('scroll-chat');
 
         Notification::make()

@@ -601,6 +601,11 @@
         </span>
       </a>
       @endauth
+
+      @guest
+      <a href="/login" class="btn-login">Masuk</a>
+      <a href="/register" class="btn-register">Daftar</a>
+      @endguest
     </div>
   </nav>
 

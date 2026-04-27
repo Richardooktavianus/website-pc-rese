@@ -340,6 +340,33 @@
   .danger-zone { flex-direction: column; text-align: center; }
   .btn-danger { width: 100%; }
 }
+
+.btn-logout {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 16px;
+    background: none;
+    border: 1px solid rgba(255,77,77,0.3);
+    border-radius: 9px;
+    color: #ff6b6b;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    align-self: flex-start;
+    transition: background 0.2s, border-color 0.2s;
+}
+.btn-logout:hover {
+    background: rgba(255,77,77,0.1);
+    border-color: rgba(255,77,77,0.5);
+}
+
+@media (max-width: 600px) {
+    .btn-logout { align-self: center; width: 100%; justify-content: center; }
+}
 </style>
 
 <div class="profile-page">
@@ -354,17 +381,30 @@
   @endif
 
   {{-- ── PROFILE HEADER ── --}}
-  <div class="profile-header">
+<div class="profile-header">
     <div class="profile-avatar">
-      👤
-      <div class="profile-avatar-edit">✏</div>
+        👤
+        <div class="profile-avatar-edit">✏</div>
     </div>
     <div class="profile-header-info">
-      <div class="profile-name">{{ auth()->user()->name }}</div>
-      <div class="profile-email">{{ auth()->user()->email }}</div>
-      <div class="profile-badge">⚡ Member Aktif</div>
+        <div class="profile-name">{{ auth()->user()->name }}</div>
+        <div class="profile-email">{{ auth()->user()->email }}</div>
+        <div class="profile-badge">⚡ Member Aktif</div>
     </div>
-  </div>
+
+    {{-- TOMBOL LOGOUT --}}
+    <form method="POST" action="/logout">
+        @csrf
+        <button type="submit" class="btn-logout">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            Logout
+        </button>
+    </form>
+</div>
 
   {{-- ── STATS ── --}}
   <div class="profile-stats">

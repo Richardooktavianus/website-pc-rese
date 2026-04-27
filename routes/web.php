@@ -80,5 +80,5 @@ Route::middleware('auth')->group(function () {
     Route::post('/checkout/process', [CheckoutController::class, 'process']);
 
     // LOGOUT
-    Route::post('/logout', [AuthController::class, 'logout']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });

@@ -650,8 +650,16 @@
         color: var(--text-muted);
         justify-content: center;
     }
-</style>
 
+    /* ===== MAP STYLE TAMBAHAN ===== */
+    #mapBox {
+        width: 100%;
+        height: 220px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+    }
+</style>
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
 <div class="checkout-wrapper">
 
     {{-- HEADER --}}
@@ -703,16 +711,7 @@
                     <div class="co-card-body">
 
                         {{-- MAP --}}
-                        <div class="map-box" id="mapBox" onclick="openMap()">
-                            <iframe
-                                src="https://www.openstreetmap.org/export/embed.html?bbox=107.5,−6.95,107.75,−6.85&layer=mapnik"
-                                allowfullscreen>
-                            </iframe>
-                            <div class="map-overlay">
-                                <div class="map-overlay-icon">🗺️</div>
-                                <div class="map-overlay-text">Klik untuk pilih lokasi di peta</div>
-                            </div>
-                        </div>
+                        <div class="map-box" id="mapBox"></div>
 
                         {{-- Detect location --}}
                         <button type="button" class="btn-detect" onclick="detectLocation()">
@@ -1026,6 +1025,65 @@
 {{-- END checkout-wrapper --}}
 
 <script>
+    let map, marker;
+
+    function initMap() {
+        const defaultPos = {
+            lat: -6.914744,
+            lng: 107.609810
+        };
+
+        map = new google.maps.Map(document.getElementById("mapBox"), {
+            center: defaultPos,
+            zoom: 13,
+        });
+
+        marker = new google.maps.Marker({
+            position: defaultPos,
+            map: map,
+            draggable: true,
+        });
+
+        map.addListener("click", (e) => {
+            setMarker(e.latLng);
+        });
+
+        marker.addListener("dragend", () => {
+            updateInput(marker.getPosition());
+        });
+
+        updateInput(marker.getPosition());
+    }
+
+    function setMarker(location) {
+        marker.setPosition(location);
+        updateInput(location);
+    }
+
+    function updateInput(pos) {
+        document.getElementById("latitude").value = pos.lat();
+        document.getElementById("longitude").value = pos.lng();
+    }
+
+    window.detectLocation = function() {
+        if (!navigator.geolocation) {
+            alert("GPS tidak support");
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition((pos) => {
+            const userPos = {
+                lat: pos.coords.latitude,
+                lng: pos.coords.longitude
+            };
+
+            map.setCenter(userPos);
+            marker.setPosition(userPos);
+            updateInput(marker.getPosition());
+        });
+    };
+
+    window.onload = initMap;
     (function() {
 
         // Ongkir per kurir
