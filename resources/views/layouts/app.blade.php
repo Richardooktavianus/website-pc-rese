@@ -8,6 +8,7 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=DM+Sans:wght@400;500;600&family=Orbitron:wght@700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
 
   <style>
     /* ========== GLOBAL THEME (YANG KAMU LUPA) ========== */
@@ -246,8 +247,332 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+
+    .btn-user {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0 12px 0 6px;
+      height: 38px;
+      text-decoration: none;
+      transition: border-color 0.2s;
+    }
+
+    .btn-user:hover {
+      border-color: rgba(0, 229, 160, 0.4);
+    }
+
+    .user-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: rgba(0, 229, 160, 0.15);
+      border: 1px solid rgba(0, 229, 160, 0.3);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Rajdhani', sans-serif;
+      flex-shrink: 0;
+    }
+
+    .user-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-primary);
+      white-space: nowrap;
+      max-width: 80px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Sembunyikan nama di layar sangat kecil */
+    @media (max-width: 400px) {
+      .user-name {
+        display: none;
+      }
+
+      .btn-user {
+        padding: 0 6px;
+      }
+    }
+
+    /* FLOAT BUTTON */
+    #csButton {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 52px;
+      height: 52px;
+      background: #00e5a0;
+      color: #022c22;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0, 229, 160, 0.35);
+      z-index: 9999;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: none;
+    }
+
+    #csButton:hover {
+      transform: scale(1.08);
+      box-shadow: 0 6px 24px rgba(0, 229, 160, 0.5);
+    }
+
+    /* POPUP */
+    #csPopup {
+      position: fixed;
+      bottom: 90px;
+      right: 24px;
+      width: 300px;
+      background: #111318;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 16px;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 9999;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    /* HEADER */
+    .cs-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: #161a24;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .cs-header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cs-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(0, 229, 160, 0.12);
+      border: 1.5px solid rgba(0, 229, 160, 0.35);
+      color: #00e5a0;
+      font-size: 10px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .cs-header-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #f0f2f8;
+    }
+
+    .cs-header-status {
+      font-size: 11px;
+      color: #00e5a0;
+      margin-top: 1px;
+    }
+
+    .cs-close-btn {
+      background: none;
+      border: none;
+      color: #6b7280;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      border-radius: 6px;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .cs-close-btn:hover {
+      background: rgba(255, 255, 255, 0.07);
+      color: #f0f2f8;
+    }
+
+    /* CHAT BODY */
+    .cs-chat {
+      height: 220px;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: #0d1017;
+    }
+
+    .cs-chat::-webkit-scrollbar {
+      width: 3px;
+    }
+
+    .cs-chat::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .cs-chat::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+    }
+
+    /* MESSAGES */
+    .cs-msg {
+      display: flex;
+    }
+
+    .cs-msg-user {
+      justify-content: flex-end;
+    }
+
+    /* user → kanan */
+    .cs-msg-admin {
+      justify-content: flex-start;
+    }
+
+    /* admin → kiri */
+
+    .cs-bubble {
+      max-width: 80%;
+      padding: 8px 12px;
+      border-radius: 14px;
+      font-size: 13px;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    .cs-msg-user .cs-bubble {
+      background: linear-gradient(135deg, #00e5a0, #00b87c);
+      color: #022c22;
+      font-weight: 500;
+      border-bottom-right-radius: 4px;
+    }
+
+    .cs-msg-admin .cs-bubble {
+      background: #1a1f2e;
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-bottom-left-radius: 4px;
+    }
+
+    /* INPUT */
+    .cs-input-area {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      background: #161a24;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .cs-input-area input {
+      flex: 1;
+      background: #0d1017;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      color: #f0f2f8;
+      font-size: 13px;
+      padding: 8px 12px;
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .cs-input-area input::placeholder {
+      color: #4b5563;
+    }
+
+    .cs-input-area input:focus {
+      border-color: rgba(0, 229, 160, 0.4);
+    }
+
+    .cs-send-btn {
+      width: 34px;
+      height: 34px;
+      flex-shrink: 0;
+      background: #00e5a0;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #022c22;
+      transition: background 0.18s, transform 0.15s;
+    }
+
+    .cs-send-btn:hover {
+      background: #00f0aa;
+      transform: scale(1.05);
+    }
+
+    .cs-send-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* Responsive - layar kecil */
+    @media (max-width: 400px) {
+      #csPopup {
+        right: 12px;
+        left: 12px;
+        width: auto;
+        bottom: 80px;
+      }
+    }
   </style>
 </head>
+<!-- FLOATING CS BUTTON -->
+<div id="csButton">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+  </svg>
+</div>
+
+<!-- POPUP CUSTOMER SERVICE -->
+<div id="csPopup">
+  <div class="cs-header">
+    <div class="cs-header-left">
+      <div class="cs-avatar">CS</div>
+      <div>
+        <div class="cs-header-name">Customer Service</div>
+        <div class="cs-header-status">● online</div>
+      </div>
+    </div>
+    <button class="cs-close-btn" onclick="toggleCS()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+      </svg>
+    </button>
+  </div>
+
+  <div class="cs-chat" id="csChat">
+    <div class="cs-msg cs-msg-admin">
+      <div class="cs-bubble">Halo! 👋 Ada yang bisa kami bantu?</div>
+    </div>
+  </div>
+
+  <div class="cs-input-area">
+    <input type="text" id="csInput" placeholder="Ketik pesan..." />
+    <button onclick="sendMessage()" class="cs-send-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="22" y1="2" x2="11" y2="13" />
+        <polygon points="22 2 15 22 11 13 2 9 22 2" />
+      </svg>
+    </button>
+  </div>
+</div>
 
 <body>
 
@@ -255,23 +580,26 @@
   <nav class="navbar">
     <a href="/" class="logo">⚡ PC<span style="color:white">Rakit</span></a>
 
-    <div class="search-bar">
+    <form action="/komponen" method="GET" class="search-bar">
       <span class="search-icon">🔍</span>
-      <input type="text" placeholder="Cari komponen...">
-    </div>
+      <input type="text" name="search" placeholder="Cari komponen..." value="{{ request('search') }}">
+    </form>
 
     <div class="nav-actions">
-      <a href="/cart" class="cart-btn">🛒
-        <span class="cart-badge">3</span>
+      <a href="/cart" class="cart-btn">
+        🛒
+        <span class="cart-badge">{{ count(session('cart', [])) }}</span>
       </a>
+
       @auth
-      <a href="/profile" class="btn-profile">
-        <span class="profile-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
-        <span class="profile-name">{{ auth()->user()->name }}</span>
+      <a href="/user" class="btn-user">
+        <div class="user-avatar">
+          {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+        </div>
+        <span class="user-name">
+          {{ auth()->user()->name }}
+        </span>
       </a>
-      @else
-      <a href="/login" class="btn-login">Login</a>
-      <a href="/register" class="btn-register">Daftar</a>
       @endauth
     </div>
   </nav>
@@ -309,3 +637,75 @@
 </body>
 
 </html>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+
+    const btn = document.getElementById('csButton');
+    const popup = document.getElementById('csPopup');
+
+    btn.addEventListener('click', function() {
+      if (popup.style.display === 'flex') {
+        popup.style.display = 'none';
+      } else {
+        popup.style.display = 'flex';
+      }
+    });
+
+  });
+
+  function toggleCS() {
+    const popup = document.getElementById('csPopup');
+    popup.style.display = popup.style.display === 'flex' ? 'none' : 'flex';
+  }
+
+  function sendMessage() {
+    const input = document.getElementById('csInput');
+    const chat = document.getElementById('csChat');
+
+    if (input.value.trim() === '') return;
+
+    // tampilkan pesan user
+    const userMsg = document.createElement('div');
+    userMsg.className = 'msg user';
+    userMsg.innerText = input.value;
+    chat.appendChild(userMsg);
+
+    // kirim ke backend (WAJIB kalau mau real chat)
+    fetch('/chat/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({
+        message: input.value
+      })
+    });
+
+    input.value = '';
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function loadChat() {
+    fetch('/chat/me')
+      .then(res => res.json())
+      .then(data => {
+        const chat = document.getElementById('csChat');
+        chat.innerHTML = '';
+        data.forEach(msg => {
+          const row = document.createElement('div');
+          row.className = 'cs-msg ' + (msg.sender === 'admin' ? 'cs-msg-admin' : 'cs-msg-user');
+          const bubble = document.createElement('div');
+          bubble.className = 'cs-bubble';
+          bubble.innerText = msg.message;
+          row.appendChild(bubble);
+          chat.appendChild(row);
+        });
+        chat.scrollTop = chat.scrollHeight;
+      });
+  }
+
+  // refresh tiap 2 detik
+  setInterval(loadChat, 2000);
+</script>

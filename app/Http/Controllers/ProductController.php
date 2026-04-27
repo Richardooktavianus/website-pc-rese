@@ -4,10 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
-use App\Models\Category; // 
+use App\Models\Category;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
+    public function user()
+    {
+        $user = Auth::user();
+        return view('user', compact('user'));
+    }
     public function index()
     {
         $products = \App\Models\Product::all();
@@ -29,7 +35,14 @@ class ProductController extends Controller
 
     public function komponen(Request $request)
     {
-        $products   = Product::with('category')->get();
+        $query = Product::with('category');
+
+        // fitur search berdasarkan nama produk
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        $products   = $query->get();
         $categories = Category::withCount('products')->get();
 
         return view('komponen', compact('products', 'categories'));

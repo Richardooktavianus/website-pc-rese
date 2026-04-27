@@ -6,6 +6,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\BuilderController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ChatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,23 +14,27 @@ use App\Http\Controllers\AuthController;
 |--------------------------------------------------------------------------
 */
 
-// halaman produk
+// HOME & PRODUCT
 Route::get('/', [ProductController::class, 'index']);
 Route::get('/product/{id}', [ProductController::class, 'show']);
-
-// halaman komponen
 Route::get('/komponen', [ProductController::class, 'komponen']);
 
-// builder boleh dilihat tanpa login
+// BUILDER (VIEW)
 Route::get('/builder', [BuilderController::class, 'index']);
 Route::post('/builder/calc', [BuilderController::class, 'calc']);
+
+// USER PAGE
+Route::get('/user', [ProductController::class, 'user']);
+
+// CHAT (AMBIL DATA)
+Route::get('/chat/get', [ChatController::class, 'get']);
+
 
 /*
 |--------------------------------------------------------------------------
 | AUTH ROUTE (HANYA UNTUK GUEST)
 |--------------------------------------------------------------------------
 */
-
 Route::middleware('guest')->group(function () {
 
     Route::get('/login', function () {
@@ -45,13 +50,21 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
 });
 
+
 /*
 |--------------------------------------------------------------------------
 | PROTECTED ROUTE (WAJIB LOGIN)
 |--------------------------------------------------------------------------
 */
-
 Route::middleware('auth')->group(function () {
+
+    // CHAT (KIRIM PESAN)
+    Route::post('/chat/send', [ChatController::class, 'send']);
+    Route::get('/chat/me', [ChatController::class, 'getChat']);
+
+    // admin
+    Route::get('/admin/chat/{userId}', [ChatController::class, 'adminGetChat']);
+    Route::post('/admin/chat/reply/{userId}', [ChatController::class, 'reply']);
 
     // CART
     Route::get('/cart', [CartController::class, 'index']);
