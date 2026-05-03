@@ -11,10 +11,10 @@ class BuilderController extends Controller
     public function index()
     {
         return view('builder', [
-            'cpu'         => Product::whereHas('category', fn($q) => $q->where('name', 'Processor'))->get(),
-            'gpu'         => Product::whereHas('category', fn($q) => $q->where('name', 'VGA / GPU'))->get(),
+            'cpu'         => Product::whereHas('category', fn($q) => $q->where('name', 'CPU'))->get(),
+            'gpu'         => Product::whereHas('category', fn($q) => $q->where('name', 'GPU'))->get(),
             'ram'         => Product::whereHas('category', fn($q) => $q->where('name', 'RAM'))->get(),
-            'motherboard' => Product::whereHas('category', fn($q) => $q->where('name', 'MotherBoard'))->get(),
+            'motherboard' => Product::whereHas('category', fn($q) => $q->where('name', 'Motherboard'))->get(),
             'ssd'         => Product::whereHas('category', fn($q) => $q->where('name', 'SSD'))->get(),
             'hdd'         => Product::whereHas('category', fn($q) => $q->where('name', 'HDD'))->get(),
             'case'        => Product::whereHas('category', fn($q) => $q->where('name', 'Casing'))->get(),

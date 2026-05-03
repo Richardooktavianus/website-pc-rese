@@ -3,22 +3,17 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Filament\Widgets\StatsOverview;
+use Illuminate\Support\Facades\DB; // 🔥 INI WAJIB
+
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
-        //
+        DB::statement('SET search_path TO public'); // 🔥 FIX
     }
 }

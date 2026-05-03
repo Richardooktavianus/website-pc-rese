@@ -22,7 +22,11 @@ class ProductForm
                 ->relationship('category', 'name')
                 ->required(),
 
-            FileUpload::make('image')->image(),
+            FileUpload::make('image')
+                ->image()
+                ->directory('products')
+                ->disk('public')
+                ->visibility('public'),
 
             Textarea::make('description'),
         ]);

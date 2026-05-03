@@ -332,7 +332,7 @@
         {{-- IMAGE --}}
         <div class="product-image-box">
             @if($product->image)
-            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+            <img src="{{$product->image }}" alt="{{ $product->name }}">
             @else
             <div class="product-image-placeholder">
                 <span style="font-size:40px;opacity:0.3;">📦</span>
