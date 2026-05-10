@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
-    ublic function loginPage()
+    public function loginPage()
     {
         return view('admin.login');
     }
