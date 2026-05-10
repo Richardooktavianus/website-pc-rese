@@ -916,7 +916,7 @@ $categories = [
   <a href="/product/{{ $product->id }}" class="product-card" data-index="{{ $index }}">
     <div class="product-img">
       @if($product->image)
-      <img src="{{ asset('storage/'.$product->image) }}" alt="{{ $product->name }}">
+      <img src="{{ $product->image }}" alt="{{ $product->name }}">
       @else
       <div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:var(--text-muted);font-size:13px;">No Image</div>
       @endif

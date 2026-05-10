@@ -398,7 +398,7 @@
 
                 <div class="rec-img">
                     @if($item->image)
-                    <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->name }}">
+                    <img src="{{ $product->image }}" alt="{{ $item->name }}">
                     @else
                     <span>No Image</span>
                     @endif

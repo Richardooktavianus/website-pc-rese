@@ -2,54 +2,104 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Chat;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ChatController extends Controller
 {
-    // ambil chat user login
-    public function getChat()
+    // =========================
+    // USER CHAT
+    // =========================
+
+    public function index()
     {
-        return Chat::where('user_id', Auth::id())
-            ->orderBy('id', 'asc')
-            ->get();
+        return view('chat.index');
     }
 
-    // untuk popup (global / sementara)
-    public function get()
+    public function messages()
     {
-        return Chat::latest()->take(20)->get()->reverse()->values();
+        return response()->json(
+
+            Chat::where('user_id', Auth::id())
+                ->orderBy('created_at')
+                ->get()
+
+        );
     }
 
-    // kirim pesan user
     public function send(Request $request)
     {
         $request->validate([
-            'message' => 'required|string|max:1000'
+            'message' => 'required'
         ]);
 
         Chat::create([
             'user_id' => Auth::id(),
             'message' => $request->message,
-            'sender' => 'user'
+            'sender' => 'user',
         ]);
 
-        return response()->json(['status' => 'ok']);
+        return response()->json([
+            'success' => true
+        ]);
+    }
+
+    // =========================
+    // ADMIN CHAT
+    // =========================
+
+    public function adminIndex()
+{
+    $users = \App\Models\User::whereHas('chats')
+
+        ->with(['chats' => function($q) {
+
+            $q->latest();
+
+        }])
+
+        ->get();
+
+    return view(
+        'admin.chat.index',
+        compact('users')
+    );
+}
+
+    public function adminRoom($userId)
+    {
+        $user = User::findOrFail($userId);
+
+        return view('admin.chat.room', compact('user'));
+    }
+
+    public function adminMessages($userId)
+    {
+        return response()->json(
+
+            Chat::where('user_id', $userId)
+                ->orderBy('created_at')
+                ->get()
+
+        );
     }
 
     public function reply(Request $request, $userId)
     {
         $request->validate([
-            'message' => 'required|string|max:1000'
+            'message' => 'required'
         ]);
 
         Chat::create([
             'user_id' => $userId,
             'message' => $request->message,
-            'sender' => 'admin'
+            'sender' => 'admin',
         ]);
 
-        return response()->json(['status' => 'ok']);
+        return response()->json([
+            'success' => true
+        ]);
     }
 }

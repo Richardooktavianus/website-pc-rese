@@ -616,41 +616,228 @@
     </svg>
   </div>
 
-  <!-- POPUP CUSTOMER SERVICE -->
-  <div id="csPopup">
+<!-- POPUP CUSTOMER SERVICE -->
+<div id="csPopup">
+
+    <!-- HEADER -->
     <div class="cs-header">
-      <div class="cs-header-left">
-        <div class="cs-avatar">CS</div>
-        <div>
-          <div class="cs-header-name">Customer Service</div>
-          <div class="cs-header-status">● online</div>
+
+        <div class="cs-header-left">
+
+            <div class="cs-avatar">
+                CS
+            </div>
+
+            <div>
+                <div class="cs-header-name">
+                    Customer Service
+                </div>
+
+                <div class="cs-header-status">
+                    ● online
+                </div>
+            </div>
+
         </div>
-      </div>
-      <button class="cs-close-btn" onclick="toggleCS()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-          <line x1="18" y1="6" x2="6" y2="18" />
-          <line x1="6" y1="6" x2="18" y2="18" />
-        </svg>
-      </button>
+
+        <button class="cs-close-btn" onclick="toggleCS()">
+
+            <svg width="14" height="14"
+                 viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2.5"
+                 stroke-linecap="round">
+
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+
+            </svg>
+
+        </button>
+
     </div>
 
+    <!-- CHAT AREA -->
     <div class="cs-chat" id="csChat">
-      <div class="cs-msg cs-msg-admin">
-        <div class="cs-bubble">Halo! 👋 Ada yang bisa kami bantu?</div>
-      </div>
+
+        <!-- pesan otomatis -->
+        <div class="cs-msg cs-msg-admin">
+
+            <div class="cs-bubble">
+                Halo! 👋 Ada yang bisa kami bantu?
+            </div>
+
+        </div>
+
     </div>
 
+    <!-- INPUT -->
     <div class="cs-input-area">
-      <input type="text" id="csInput" placeholder="Ketik pesan..." />
-      <button onclick="sendMessage()" class="cs-send-btn">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="22" y1="2" x2="11" y2="13" />
-          <polygon points="22 2 15 22 11 13 2 9 22 2" />
-        </svg>
-      </button>
-    </div>
-  </div>
 
+        <input
+            type="text"
+            id="csInput"
+            placeholder="Ketik pesan..."
+            onkeypress="handleEnter(event)" />
+
+        <button onclick="sendMessage()" class="cs-send-btn">
+
+            <svg width="15"
+                 height="15"
+                 viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2.2"
+                 stroke-linecap="round"
+                 stroke-linejoin="round">
+
+                <line x1="22" y1="2" x2="11" y2="13" />
+
+                <polygon points="22 2 15 22 11 13 2 9 22 2" />
+
+            </svg>
+
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+
+// ===============================
+// LOAD CHAT
+// ===============================
+
+async function loadMessages()
+{
+    try {
+
+        let response = await fetch('/chat/messages');
+
+        let data = await response.json();
+
+        let html = '';
+
+        // greeting default
+        html += `
+            <div class="cs-msg cs-msg-admin">
+                <div class="cs-bubble">
+                    Halo! 👋 Ada yang bisa kami bantu?
+                </div>
+            </div>
+        `;
+
+        data.forEach(msg => {
+
+            html += `
+
+                <div class="cs-msg ${
+                    msg.sender === 'admin'
+                    ? 'cs-msg-admin'
+                    : 'cs-msg-user'
+                }">
+
+                    <div class="cs-bubble">
+
+                        ${msg.message}
+
+                    </div>
+
+                </div>
+
+            `;
+        });
+
+        document.getElementById('csChat').innerHTML = html;
+
+        scrollChatBottom();
+
+    } catch(error) {
+
+        console.log(error);
+
+    }
+}
+
+// ===============================
+// SEND MESSAGE
+// ===============================
+
+async function sendMessage()
+{
+    let input = document.getElementById('csInput');
+
+    let message = input.value.trim();
+
+    if(message === '') return;
+
+    try {
+
+        await fetch('/chat/send', {
+
+            method: 'POST',
+
+            headers: {
+
+                'Content-Type': 'application/json',
+
+                'X-CSRF-TOKEN':
+                    '{{ csrf_token() }}'
+            },
+
+            body: JSON.stringify({
+
+                message: message
+
+            })
+
+        });
+
+        input.value = '';
+
+        loadMessages();
+
+    } catch(error) {
+
+        console.log(error);
+
+    }
+}
+
+// ===============================
+// ENTER KEY
+// ===============================
+
+function handleEnter(event)
+{
+    if(event.key === 'Enter') {
+
+        sendMessage();
+    }
+}
+
+// ===============================
+// AUTO SCROLL
+// ===============================
+
+function scrollChatBottom()
+{
+    let chatBox = document.getElementById('csChat');
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// ===============================
+// AUTO REFRESH
+// ===============================
+
+loadMessages();
+
+setInterval(loadMessages, 2000);
+
+</script>
   <!-- NAVBAR -->
   <nav class="navbar">
     <a href="/" class="logo">⚡ PC<span style="color:white">Rakit</span></a>

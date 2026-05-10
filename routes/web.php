@@ -8,6 +8,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\MapController;
+use App\Http\Controllers\AdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,9 +64,16 @@ Route::middleware('guest')->group(function () {
 */
 Route::middleware('auth')->group(function () {
 
-    // CHAT (KIRIM PESAN)
+    // CHAT User (KIRIM PESAN)
+    Route::get('/chat', [ChatController::class, 'index']);
+
     Route::post('/chat/send', [ChatController::class, 'send']);
-    Route::get('/chat/me', [ChatController::class, 'getChat']);
+
+    Route::get('/chat/messages',
+        [ChatController::class, 'messages']);
+
+    Route::get('/chat/get', [ChatController::class, 'get']);
+
 
     // admin
     Route::get('/admin/chat/{userId}', [ChatController::class, 'adminGetChat']);
@@ -87,3 +95,42 @@ Route::middleware('auth')->group(function () {
     // LOGOUT
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
+
+Route::middleware('admin')
+    ->prefix('admin')
+    ->group(function () {
+
+    Route::get('/dashboard', function () {
+        return view('admin.dashboard');
+    });
+
+    Route::get('/chat', [ChatController::class, 'adminIndex']);
+
+     Route::get('/chat/messages/{userId}',
+        [ChatController::class, 'adminMessages']);
+
+    Route::post('/chat/reply/{userId}', [ChatController::class, 'reply']);
+});
+
+
+// ADMIN LOGIN
+Route::prefix('admin')->group(function () {
+
+    Route::get('/login', [AdminController::class, 'loginForm']);
+
+    Route::post('/login', [AdminController::class, 'login']);
+});
+
+
+// PRODUCT CRUD ADMIN
+Route::get('/products', [AdminProductController::class, 'index']);
+
+Route::get('/products/create', [AdminProductController::class, 'create']);
+
+Route::post('/products/store', [AdminProductController::class, 'store']);
+
+Route::get('/products/edit/{id}', [AdminProductController::class, 'edit']);
+
+Route::post('/products/update/{id}', [AdminProductController::class, 'update']);
+
+Route::post('/products/delete/{id}', [AdminProductController::class, 'delete']);

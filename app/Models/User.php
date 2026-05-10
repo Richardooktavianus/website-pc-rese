@@ -2,20 +2,18 @@
 
 namespace App\Models;
 
-use Filament\Models\Contracts\FilamentUser;
-use Filament\Panel;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use Notifiable;
 
     protected $fillable = [
         'name',
         'email',
         'password',
+        'role',
     ];
 
     protected $hidden = [
@@ -23,15 +21,16 @@ class User extends Authenticatable implements FilamentUser
         'remember_token',
     ];
 
-    // 🔥 FIX: gunakan property $casts (bukan method)
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
-
-    // 🔥 akses filament
-    public function canAccessPanel(Panel $panel): bool
+    protected function casts(): array
     {
-       return $this->role === 'admin';
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
     }
+
+    public function chats()
+{
+    return $this->hasMany(Chat::class);
+}
 }
