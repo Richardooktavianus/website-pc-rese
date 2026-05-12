@@ -14,7 +14,7 @@ class BuilderController extends Controller
             'cpu'         => Product::whereHas('category', fn($q) => $q->where('name', 'CPU'))->get(),
             'gpu'         => Product::whereHas('category', fn($q) => $q->where('name', 'GPU'))->get(),
             'ram'         => Product::whereHas('category', fn($q) => $q->where('name', 'RAM'))->get(),
-            'motherboard' => Product::whereHas('category', fn($q) => $q->where('name', 'Motherboard'))->get(),
+            'MOBO' => Product::whereHas('category', fn($q) => $q->where('name', 'MOBO'))->get(),
             'ssd'         => Product::whereHas('category', fn($q) => $q->where('name', 'SSD'))->get(),
             'hdd'         => Product::whereHas('category', fn($q) => $q->where('name', 'HDD'))->get(),
             'case'        => Product::whereHas('category', fn($q) => $q->where('name', 'Casing'))->get(),
@@ -31,7 +31,7 @@ class BuilderController extends Controller
             'cpu'         => 'required|exists:products,id',
             'gpu'         => 'required|exists:products,id',
             'ram'         => 'required|exists:products,id',
-            'motherboard' => 'required|exists:products,id',
+            'MOBO' => 'required|exists:products,id',
             'psu'         => 'required|exists:products,id',
             'ssd'         => 'nullable|required_without:hdd|exists:products,id',
             'hdd'         => 'nullable|required_without:ssd|exists:products,id',
@@ -44,7 +44,7 @@ class BuilderController extends Controller
             if ($errors->has('cpu'))                      $pesan[] = 'CPU wajib dipilih';
             if ($errors->has('gpu'))                      $pesan[] = 'GPU wajib dipilih';
             if ($errors->has('ram'))                      $pesan[] = 'RAM wajib dipilih';
-            if ($errors->has('motherboard'))              $pesan[] = 'Motherboard wajib dipilih';
+            if ($errors->has('MOBO'))              $pesan[] = 'Motherboard wajib dipilih';
             if ($errors->has('psu'))                      $pesan[] = 'PSU wajib dipilih';
             if ($errors->has('ssd') || $errors->has('hdd')) $pesan[] = 'Minimal pilih SSD atau HDD';
 
@@ -55,23 +55,23 @@ class BuilderController extends Controller
         $cpu         = Product::find($request->cpu);
         $gpu         = Product::find($request->gpu);
         $ram         = Product::find($request->ram);
-        $motherboard = Product::find($request->motherboard);
+        $MOBO = Product::find($request->MOBO);
         $psu         = Product::find($request->psu);
 
         // Cek kompatibilitas CPU vs Motherboard
-        if ($cpu && $motherboard && $cpu->socket && $motherboard->socket) {
-            if ($cpu->socket !== $motherboard->socket) {
+        if ($cpu && $MOBO && $cpu->socket && $MOBO->socket) {
+            if ($cpu->socket !== $MOBO->socket) {
                 return response()->json([
-                    'error' => 'CPU tidak kompatibel dengan Motherboard (socket berbeda: ' . $cpu->socket . ' vs ' . $motherboard->socket . ')'
+                    'error' => 'CPU tidak kompatibel dengan Motherboard (socket berbeda: ' . $cpu->socket . ' vs ' . $MOBO->socket . ')'
                 ], 400);
             }
         }
 
         // Cek kompatibilitas RAM vs Motherboard
-        if ($ram && $motherboard && $ram->ram_type && $motherboard->ram_type) {
-            if ($ram->ram_type !== $motherboard->ram_type) {
+        if ($ram && $MOBO && $ram->ram_type && $MOBO->ram_type) {
+            if ($ram->ram_type !== $MOBO->ram_type) {
                 return response()->json([
-                    'error' => 'RAM tidak kompatibel dengan Motherboard (tipe berbeda: ' . $ram->ram_type . ' vs ' . $motherboard->ram_type . ')'
+                    'error' => 'RAM tidak kompatibel dengan Motherboard (tipe berbeda: ' . $ram->ram_type . ' vs ' . $MOBO->ram_type . ')'
                 ], 400);
             }
         }
@@ -90,7 +90,7 @@ class BuilderController extends Controller
             'cpu'         => $request->cpu,
             'gpu'         => $request->gpu,
             'ram'         => $request->ram,
-            'motherboard' => $request->motherboard,
+            'MOBO' => $request->MOBO,
             'psu'         => $request->psu,
             'ssd'         => $request->ssd,
             'hdd'         => $request->hdd,

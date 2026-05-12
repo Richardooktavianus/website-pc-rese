@@ -960,17 +960,37 @@
                     <div class="summary-header">Ringkasan Pesanan</div>
                     <div class="summary-body">
 
-                        {{-- Item list --}}
-                        @php $subtotal = 0; @endphp
-                        @foreach($cart as $index => $build)
-                        @foreach($build['items'] as $item)
-                        @php $subtotal += $item['price']; @endphp
-                        <div class="summary-item">
-                            <span class="summary-item-name">{{ $item['name'] }}</span>
-                            <span class="summary-item-price">Rp {{ number_format($item['price']) }}</span>
-                        </div>
-                        @endforeach
-                        @endforeach
+                        
+                       {{-- Item list --}}
+@if(count($checkoutItems) > 0)
+
+    @foreach($checkoutItems as $index => $build)
+
+        @foreach($build['items'] as $item)
+
+            <div class="summary-item">
+                <span class="summary-item-name">
+                    {{ $item['name'] }}
+                </span>
+
+                <span class="summary-item-price">
+                    Rp {{ number_format($item['price']) }}
+                </span>
+            </div>
+
+        @endforeach
+
+    @endforeach
+
+@else
+
+    <div class="summary-item">
+        <span class="summary-item-name">
+            Tidak ada item checkout
+        </span>
+    </div>
+
+@endif
 
                         <hr class="summary-divider">
 

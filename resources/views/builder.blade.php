@@ -381,9 +381,9 @@
             <div class="comp-icon">🔧</div>
             <div class="comp-body">
               <div class="comp-label">Motherboard</div>
-              <select name="motherboard" id="motherboard" class="comp-select builder-input" data-summary="moboRow">
+              <select name="MOBO" id="MOBO" class="comp-select builder-input" data-summary="moboRow">
                 <option value="" data-price="0">— Pilih Motherboard —</option>
-                @foreach($motherboard as $m)
+                @foreach($MOBO as $m)
                   <option value="{{ $m->id }}"
                     data-price="{{ $m->price }}"
                     data-socket="{{ $m->socket ?? '' }}"
@@ -714,7 +714,7 @@ document.addEventListener('DOMContentLoaded', function () {
   /* ── Map: select name → summary IDs ── */
   const summaryMap = {
     cpu:         { name: 'cpuName',    price: 'cpuPrice'    },
-    motherboard: { name: 'moboName',   price: 'moboPrice'   },
+    MOBO: { name: 'moboName',   price: 'moboPrice'   },
     gpu:         { name: 'gpuName',    price: 'gpuPrice'    },
     ram:         { name: 'ramName',    price: 'ramPrice'    },
     ssd:         { name: 'ssdName',    price: 'ssdPrice'    },
@@ -787,7 +787,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const msg = document.getElementById('compatMsg');
 
     const cpuSel  = document.getElementById('cpu');
-    const moboSel = document.getElementById('motherboard');
+    const moboSel = document.getElementById('MOBO');
     const ramSel  = document.getElementById('ram');
 
     const cpuOpt  = cpuSel  ? cpuSel.options[cpuSel.selectedIndex]   : null;
@@ -801,7 +801,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Only check if data exists
     const hasCpu  = cpuSel  && cpuSel.value;
-    const hasMobo = moboSel && moboSel.value;
+    const hasMobo = moboSel && moboSel.value; 
     const hasRam  = ramSel  && ramSel.value;
 
     if (hasCpu && hasMobo && cpuSocket && moboSocket && cpuSocket !== moboSocket) {
@@ -829,7 +829,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* ── CPU change → filter Motherboard (if socket data exists) ── */
   const cpuSel  = document.getElementById('cpu');
-  const moboSel = document.getElementById('motherboard');
+  const moboSel = document.getElementById('MOBO');
   const ramSel  = document.getElementById('ram');
 
   const allMobos = moboSel ? Array.from(moboSel.options) : [];
@@ -889,28 +889,52 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ── Submit build ── */
-  window.submitBuild = function () {
+ window.submitBuild = function () {
     const form = document.getElementById('builderForm');
     const data = new FormData(form);
+    
+    // DEBUG: lihat apa yang dikirim
+    console.log('=== FORM DATA ===');
+    for (let [key, val] of data.entries()) {
+        console.log(key, ':', val);
+    }
 
     fetch('/builder/add-to-cart', {
-      method: 'POST',
-      headers: { 'X-CSRF-TOKEN': data.get('_token') },
-      body: data
+        method: 'POST',
+        headers: { 
+            'X-CSRF-TOKEN': data.get('_token'),
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: data
     })
-    .then(res => res.json())
-    .then(json => {
-      if (json.error) {
-        showToast('error', '✕ ' + json.error);
-      } else {
-        showToast('success', '✓ Build berhasil ditambahkan ke keranjang!');
-        // Update cart badge if exists
-        const badge = document.querySelector('.cart-badge');
-        if (badge && json.cart_count) badge.textContent = json.cart_count;
-      }
+    .then(res => {
+        console.log('=== RESPONSE ===', res.status, res.url, res.redirected);
+        if (res.redirected || res.url.includes('/login')) {
+            console.log('DIREDIRECT KE LOGIN - user belum login!');
+            window.location.href = '/login';
+            return null;
+        }
+        return res.text(); // pakai .text() dulu bukan .json()
     })
-    .catch(() => showToast('error', '✕ Terjadi kesalahan, coba lagi.'));
-  };
+    .then(text => {
+        console.log('=== RAW RESPONSE ===', text);
+        if (!text) return;
+        try {
+            const json = JSON.parse(text);
+            if (json.error) {
+                showToast('error', '✕ ' + json.error);
+            } else {
+                showToast('success', '✓ Berhasil!');
+                setTimeout(() => window.location.href = '/cart', 1500);
+            }
+        } catch(e) {
+            console.log('BUKAN JSON, response HTML:', text.substring(0, 300));
+        }
+    })
+    .catch(err => {
+        console.error('=== ERROR ===', err);
+    });
+};
 
   /* ── Reset ── */
   window.resetForm = function () {
