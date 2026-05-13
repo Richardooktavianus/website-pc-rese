@@ -131,13 +131,20 @@ class CheckoutController extends Controller
 
             foreach ($entry['items'] as $item) {
                 OrderItem::create([
-                    'order_id'     => $order->id,
-                    'product_id'   => $entry['product_id'] ?? null,
-                    'component'    => $item['name'] ?? 'Unknown',
-                    'product_name' => $item['name'] ?? 'Unknown',
-                    'price'        => $item['price'] ?? 0,
-                    'quantity'     => $item['quantity'] ?? 1,
-                ]);
+
+    'order_id'     => $order->id,
+
+    'product_id'   => $entry['product_id'] ?? null,
+
+    'component'    => $entry['name'] ?? 'Produk',
+
+    'product_name' => $entry['name'] ?? 'Produk',
+
+    'price'        => $entry['price'] ?? 0,
+
+    'quantity'     => $entry['quantity'] ?? 1,
+
+]);
             }
         }
 

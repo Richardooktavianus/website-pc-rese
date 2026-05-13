@@ -12,11 +12,25 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('chats', function (Blueprint $table) {
+
             $table->id();
-            $table->unsignedBigInteger('user_id');
+
+            // relasi user
+            $table->foreignId('user_id')
+                  ->constrained()
+                  ->onDelete('cascade');
+
+            // isi pesan
             $table->text('message');
-            $table->enum('sender', ['user', 'admin']);
+
+            // pengirim
+            $table->enum('sender', [
+                'user',
+                'admin'
+            ]);
+
             $table->timestamps();
+
         });
     }
 

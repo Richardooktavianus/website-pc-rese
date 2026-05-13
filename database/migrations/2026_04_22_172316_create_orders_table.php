@@ -12,12 +12,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('orders', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
-            $table->integer('total_price');
-            $table->string('status')->default('pending');
-            $table->timestamps();
-        });
+
+    $table->id();
+
+    $table->foreignId('user_id')
+        ->constrained()
+        ->onDelete('cascade');
+
+    $table->string('status')
+        ->default('pending');
+
+    $table->bigInteger('total_price');
+
+    $table->timestamps();
+});
     }
 
     /**

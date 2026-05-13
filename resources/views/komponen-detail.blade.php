@@ -423,7 +423,7 @@
     <div class="img-panel">
       <div class="img-main" id="imgMain">
         @if($product->image)
-          <img src="{{ asset('storage/'.$product->image) }}" alt="{{ $product->name }}" id="mainImg">
+          <img src="{{ $product->image }}" alt="{{ $product->name }}">
           <div class="img-zoom-hint">🔍 Hover untuk zoom</div>
         @else
           <div class="img-main-placeholder">📦</div>

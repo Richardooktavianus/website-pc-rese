@@ -819,371 +819,798 @@
 @endif
 <div class="komponen-page">
 
-    <!-- Mobile search -->
-    <div class="mobile-search">
-        <div class="mobile-search-wrap">
-            <span style="color:var(--text-muted);font-size:14px;">🔍</span>
-            <input type="text" id="mobileSearchInput" placeholder="Cari komponen..." oninput="filterProducts(this.value)">
-        </div>
+    <!-- MOBILE SEARCH -->
+<div class="mobile-search">
+    <div class="mobile-search-wrap">
+        <span style="color:var(--text-muted);font-size:14px;">🔍</span>
+        <input
+            type="text"
+            id="mobileSearchInput"
+            placeholder="Cari komponen..."
+            oninput="filterProducts(this.value)">
     </div>
+</div>
 
-    <div class="layout">
+<div class="layout">
 
-        <!-- ══ SIDEBAR ══ -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="sidebar-title">Kategori</div>
-                <div class="sidebar-search">
-                    <span class="sidebar-search-icon">🔍</span>
-                    <input type="text" placeholder="Cari kategori..." oninput="filterCategories(this.value)">
-                </div>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="sidebar-header">
+            <div class="sidebar-title">Kategori</div>
+
+            <div class="sidebar-search">
+                <span class="sidebar-search-icon">🔍</span>
+
+                <input
+                    type="text"
+                    placeholder="Cari kategori..."
+                    oninput="filterCategories(this.value)">
             </div>
+        </div>
 
-            <div class="sidebar-section-title">Semua Komponen</div>
+        <div class="sidebar-section-title">
+            Semua Komponen
+        </div>
 
-            <div class="cat-list" id="catList">
-                {{-- "Semua" item --}}
-                <a href="javascript:void(0)"
-                    class="cat-link active"
-                    data-cat="all"
-                    onclick="selectCategory('all', this)">
-                    <div class="cat-link-icon-wrap">⚡</div>
-                    <span class="cat-link-label">Semua</span>
-                    <span class="cat-link-count">{{ $products->count() }}</span>
-                </a>
+        <div class="cat-list" id="catList">
 
-                @php
-                $catIcons = [
-                'CPU' => '🖥️', 'Prosesor' => '🖥️',
-                'RAM' => '💾',
-                'GPU' => '🎮', 'VGA' => '🎮',
-                'Storage' => '💿', 'SSD' => '💿', 'HDD' => '💿',
-                'PSU' => '⚡', 'Power Supply' => '⚡',
-                'Cooling' => '❄️', 'Pendingin' => '❄️',
-                'Motherboard' => '🔧', 'Mobo' => '🔧',
-                'Casing' => '🗄️', 'Case' => '🗄️',
-                'Periferal' => '🖱️', 'Peripheral' => '🖱️',
-                'Monitor' => '🖥️',
-                ];
-                @endphp
+            <!-- ALL -->
+            <a href="javascript:void(0)"
+                class="cat-link active"
+                data-cat="all"
+                onclick="selectCategory('all', this)">
 
-                @foreach($categories as $cat)
-                <a href="javascript:void(0)"
-                    class="cat-link"
-                    data-cat="{{ $cat->name }}"
-                    onclick="selectCategory('{{ $cat->name }}', this)">
-                    <div class="cat-link-icon-wrap">
-                        {{ $catIcons[$cat->name] ?? '📦' }}
-                    </div>
-                    <span class="cat-link-label">{{ $cat->name }}</span>
-                    <span class="cat-link-count">{{ $cat->products_count ?? $products->where('category.name', $cat->name)->count() }}</span>
-                </a>
-                @endforeach
-            </div>
+                <div class="cat-link-icon-wrap">⚡</div>
 
-            <div class="sidebar-divider"></div>
+                <span class="cat-link-label">
+                    Semua
+                </span>
 
-            <div class="sidebar-footer">
-                <a href="/builder" class="sidebar-footer-link">
-                    🔧 <span>PC Builder</span>
-                </a>
-                <a href="/promo" class="sidebar-footer-link">
-                    🏷️ <span>Promo Aktif</span>
-                </a>
-            </div>
-        </aside>
+                <span class="cat-link-count">
+                    {{ $products->count() }}
+                </span>
 
-        <!-- ══ MAIN CONTENT ══ -->
-        <div class="content">
-
-            <!-- Page heading -->
-            <div class="page-heading">
-                <div class="page-heading-left">
-                    <div class="page-heading-title" id="pageTitle">Semua Komponen</div>
-                    <div class="page-heading-sub" id="pageSubtitle">Pilih komponen terbaik untuk build kamu</div>
-                </div>
-                <div class="page-heading-right">
-                    <select class="sort-select" onchange="sortProducts(this.value)">
-                        <option value="default">Urutkan</option>
-                        <option value="price-asc">Harga: Terendah</option>
-                        <option value="price-desc">Harga: Tertinggi</option>
-                        <option value="name-asc">Nama: A–Z</option>
-                        <option value="name-desc">Nama: Z–A</option>
-                    </select>
-                    <div class="view-toggle">
-                        <button class="view-btn active" id="gridBtn" onclick="setView('grid')" title="Grid view">⊞</button>
-                        <button class="view-btn" id="listBtn" onclick="setView('list')" title="List view">☰</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Best Seller -->
-            <div class="section-label" id="bsLabel">🔥 Best Seller</div>
-            <div class="bestseller-track" id="bsTrack">
-                @foreach($products->take(6) as $i => $item)
-                <a href="/product/{{ $item->id }}" class="bs-card" data-cat="{{ $item->category->name ?? '' }}">
-                    @if($i < 3)
-                        <div class="bs-badge">#{{ $i+1 }} Terlaris
-            </div>
-            @endif
-            <div class="bs-img">
-                @if($item->image)
-                <img src="{{ asset('storage/'.$item->image) }}" alt="{{ $item->name }}">
-                @else
-                📦
-                @endif
-            </div>
-            <div class="bs-info">
-                <div class="bs-name">{{ $item->name }}</div>
-                <div class="bs-price">Rp {{ number_format($item->price) }}</div>
-            </div>
             </a>
+
+            @php
+                $catIcons = [
+                    'CPU' => '🖥️',
+                    'Prosesor' => '🖥️',
+                    'RAM' => '💾',
+                    'GPU' => '🎮',
+                    'VGA' => '🎮',
+                    'Storage' => '💿',
+                    'SSD' => '💿',
+                    'HDD' => '💿',
+                    'PSU' => '⚡',
+                    'Power Supply' => '⚡',
+                    'Cooling' => '❄️',
+                    'Pendingin' => '❄️',
+                    'Motherboard' => '🔧',
+                    'Mobo' => '🔧',
+                    'Casing' => '🗄️',
+                    'Case' => '🗄️',
+                    'Periferal' => '🖱️',
+                    'Peripheral' => '🖱️',
+                    'Monitor' => '🖥️',
+                ];
+            @endphp
+
+            @foreach($categories as $cat)
+
+            <a href="javascript:void(0)"
+                class="cat-link"
+                data-cat="{{ strtolower($cat->slug) }}"
+                onclick="selectCategory('{{ strtolower($cat->slug) }}', this)">
+
+                <div class="cat-link-icon-wrap">
+                    {{ $catIcons[$cat->name] ?? '📦' }}
+                </div>
+
+                <span class="cat-link-label">
+                    {{ $cat->name }}
+                </span>
+
+                <span class="cat-link-count">
+                    {{ $cat->products_count }}
+                </span>
+
+            </a>
+
             @endforeach
+
         </div>
 
-        <!-- Results info -->
-        <div class="results-info">
-            <div class="results-count" id="resultsCount">
-                Menampilkan <span id="visibleCount">{{ $products->count() }}</span> produk
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-footer">
+
+            <a href="/builder" class="sidebar-footer-link">
+                🔧 <span>PC Builder</span>
+            </a>
+
+            <a href="/promo" class="sidebar-footer-link">
+                🏷️ <span>Promo Aktif</span>
+            </a>
+
+        </div>
+
+    </aside>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <!-- PAGE HEADER -->
+        <div class="page-heading">
+
+            <div class="page-heading-left">
+
+                <div class="page-heading-title" id="pageTitle">
+                    Semua Komponen
+                </div>
+
+                <div class="page-heading-sub" id="pageSubtitle">
+                    Pilih komponen terbaik untuk build kamu
+                </div>
+
             </div>
+
+            <div class="page-heading-right">
+
+                <select class="sort-select"
+                    onchange="sortProducts(this.value)">
+
+                    <option value="default">
+                        Urutkan
+                    </option>
+
+                    <option value="price-asc">
+                        Harga: Terendah
+                    </option>
+
+                    <option value="price-desc">
+                        Harga: Tertinggi
+                    </option>
+
+                    <option value="name-asc">
+                        Nama: A-Z
+                    </option>
+
+                    <option value="name-desc">
+                        Nama: Z-A
+                    </option>
+
+                </select>
+
+                <div class="view-toggle">
+
+                    <button
+                        class="view-btn active"
+                        id="gridBtn"
+                        onclick="setView('grid')">
+
+                        ⊞
+                    </button>
+
+                    <button
+                        class="view-btn"
+                        id="listBtn"
+                        onclick="setView('list')">
+
+                        ☰
+                    </button>
+
+                </div>
+
+            </div>
+
         </div>
 
-        <!-- Product Grid -->
-        <div class="section-label">📦 Semua Produk</div>
+        <!-- BEST SELLER -->
+        <div class="section-label">
+            🔥 Best Seller
+        </div>
+
+        <div class="bestseller-track" id="bsTrack">
+
+            @foreach($products->take(6) as $i => $item)
+
+            <a href="/product/{{ $item->id }}"
+                class="bs-card"
+                data-cat="{{ strtolower($item->category->slug ?? '') }}">
+
+                @if($i < 3)
+                <div class="bs-badge">
+                    #{{ $i + 1 }} Terlaris
+                </div>
+                @endif
+
+                <div class="bs-img">
+
+                    @if($item->image)
+
+                    <img
+                src="{{ $item->image }}"
+                alt="{{ $item->name }}">
+
+                    @else
+                    📦
+                    @endif
+
+                </div>
+
+                <div class="bs-info">
+
+                    <div class="bs-name">
+                        {{ $item->name }}
+                    </div>
+
+                    <div class="bs-price">
+                        Rp {{ number_format($item->price) }}
+                    </div>
+
+                </div>
+
+            </a>
+
+            @endforeach
+
+        </div>
+
+        <!-- RESULT INFO -->
+        <div class="results-info">
+
+            <div class="results-count">
+
+                Menampilkan
+                <span id="visibleCount">
+                    {{ $products->count() }}
+                </span>
+                produk
+
+            </div>
+
+        </div>
+
+        <!-- PRODUCT GRID -->
+        <div class="section-label">
+            📦 Semua Produk
+        </div>
+
         <div class="product-grid" id="productGrid">
 
             @forelse($products as $product)
+
             <a href="/product/{{ $product->id }}"
                 class="prod-card"
-                data-cat="{{ $product->category->name ?? '' }}"
+                data-cat="{{ strtolower($product->category->slug ?? '') }}"
                 data-name="{{ strtolower($product->name) }}"
                 data-price="{{ $product->price }}">
 
                 <div class="prod-img">
+
                     @if($product->image)
-                    <img src="{{ asset('storage/'.$product->image) }}" alt="{{ $product->name }}">
+
+<img src="{{ $product->image }}" alt="{{ $product->name }}">
+
                     @else
                     📦
                     @endif
-                    <div class="prod-stock-badge in">Tersedia</div>
+
+                    <div class="prod-stock-badge in">
+                        Tersedia
+                    </div>
+
                 </div>
 
                 <div class="prod-info">
-                    <div class="prod-cat-tag">{{ $product->category->name ?? 'Komponen' }}</div>
-                    <div class="prod-name">{{ $product->name }}</div>
-                    <div class="prod-price">Rp {{ number_format($product->price) }}</div>
-                    <div class="prod-btn">👁 Lihat Detail</div>
+
+                    <div class="prod-cat-tag">
+                        {{ $product->category->name ?? 'Komponen' }}
+                    </div>
+
+                    <div class="prod-name">
+                        {{ $product->name }}
+                    </div>
+
+                    <div class="prod-price">
+                        Rp {{ number_format($product->price) }}
+                    </div>
+
+                    <div class="prod-btn">
+                        👁 Lihat Detail
+                    </div>
+
                 </div>
 
             </a>
+
             @empty
+
             <div class="empty-state">
-                <div class="empty-state-icon">📦</div>
-                <div class="empty-state-title">Belum Ada Produk</div>
-                <div class="empty-state-sub">Produk akan segera tersedia.</div>
+
+                <div class="empty-state-icon">
+                    📦
+                </div>
+
+                <div class="empty-state-title">
+                    Belum Ada Produk
+                </div>
+
+                <div class="empty-state-sub">
+                    Produk akan segera tersedia.
+                </div>
+
             </div>
+
             @endforelse
 
         </div>
 
-        <!-- Load More -->
-        <div class="load-more-wrap" id="loadMoreWrap" style="display:none;">
-            <button class="load-more-btn" onclick="loadMore()">
+        <!-- LOAD MORE -->
+        <div
+            class="load-more-wrap"
+            id="loadMoreWrap"
+            style="display:none;">
+
+            <button
+                class="load-more-btn"
+                onclick="loadMore()">
+
                 Tampilkan Lebih Banyak ↓
+
             </button>
+
         </div>
 
-    </div><!-- end .content -->
+    </div>
+
 </div><!-- end .layout -->
 </div>
 
 <script>
-    let currentCat = 'all';
-    let currentSearch = '';
-    let currentSort = 'default';
-    const BATCH = 12;
-    let visibleCount = BATCH;
 
-    // Taruh di bagian bawah <script> yang sudah ada, setelah applyFilters()
-    // Auto-select kategori dari URL param ?cat=
-    (function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const catParam = urlParams.get('cat');
-        if (!catParam) return;
+let currentCat = 'all';
+let currentSearch = '';
+let currentSort = 'default';
 
-        // Cari cat-link yang data-cat-nya cocok (case-insensitive)
-        const links = document.querySelectorAll('.cat-link');
+const BATCH = 12;
+let visibleCount = BATCH;
+
+/* =========================
+   HELPERS
+========================= */
+
+function allCards() {
+    return Array.from(
+        document.querySelectorAll('#productGrid .prod-card')
+    );
+}
+
+function allBsCards() {
+    return Array.from(
+        document.querySelectorAll('#bsTrack .bs-card')
+    );
+}
+
+/* =========================
+   APPLY FILTER
+========================= */
+
+function applyFilters() {
+
+    const cards = allCards();
+
+    let matched = cards.filter(card => {
+
+        const cardCat =
+            (card.dataset.cat || '').toLowerCase();
+
+        const cardName =
+            (card.dataset.name || '').toLowerCase();
+
+        const catMatch =
+            currentCat === 'all' ||
+            cardCat === currentCat;
+
+        const searchMatch =
+            cardName.includes(currentSearch);
+
+        return catMatch && searchMatch;
+    });
+
+    /* SORTING */
+    if(currentSort !== 'default') {
+
+        matched.sort((a, b) => {
+
+            const pa =
+                parseFloat(a.dataset.price) || 0;
+
+            const pb =
+                parseFloat(b.dataset.price) || 0;
+
+            const na =
+                a.dataset.name || '';
+
+            const nb =
+                b.dataset.name || '';
+
+            switch(currentSort) {
+
+                case 'price-asc':
+                    return pa - pb;
+
+                case 'price-desc':
+                    return pb - pa;
+
+                case 'name-asc':
+                    return na.localeCompare(nb);
+
+                case 'name-desc':
+                    return nb.localeCompare(na);
+
+                default:
+                    return 0;
+            }
+
+        });
+    }
+
+    /* RESET */
+    cards.forEach(card => {
+        card.style.display = 'none';
+    });
+
+    /* REORDER DOM */
+    const grid =
+        document.getElementById('productGrid');
+
+    matched.forEach(card => {
+        grid.appendChild(card);
+    });
+
+    /* SHOW LIMITED */
+    matched.forEach((card, index) => {
+
+        if(index < visibleCount) {
+            card.style.display = '';
+        }
+
+    });
+
+    /* UPDATE COUNT */
+    document.getElementById('visibleCount')
+        .textContent = matched.length;
+
+    /* BEST SELLER FILTER */
+    allBsCards().forEach(card => {
+
+        const cardCat =
+            (card.dataset.cat || '').toLowerCase();
+
+        const show =
+            currentCat === 'all' ||
+            cardCat === currentCat;
+
+        card.style.display =
+            show ? '' : 'none';
+    });
+
+    /* LOAD MORE */
+    document.getElementById('loadMoreWrap')
+        .style.display =
+            matched.length > visibleCount
+                ? 'block'
+                : 'none';
+
+    /* EMPTY STATE */
+    let empty =
+        document.querySelector('.dynamic-empty');
+
+    if(matched.length === 0) {
+
+        if(!empty) {
+
+            empty = document.createElement('div');
+
+            empty.className =
+                'empty-state dynamic-empty';
+
+            empty.innerHTML = `
+                <div class="empty-state-icon">
+                    🔍
+                </div>
+
+                <div class="empty-state-title">
+                    Produk Tidak Ditemukan
+                </div>
+
+                <div class="empty-state-sub">
+                    Coba kata kunci atau kategori lain
+                </div>
+            `;
+
+            grid.appendChild(empty);
+        }
+
+    } else {
+
+        if(empty) {
+            empty.remove();
+        }
+    }
+}
+
+/* =========================
+   CATEGORY
+========================= */
+
+function selectCategory(cat, el) {
+
+    currentCat = cat.toLowerCase();
+
+    visibleCount = BATCH;
+
+    document.querySelectorAll('.cat-link')
+        .forEach(link => {
+            link.classList.remove('active');
+        });
+
+    el.classList.add('active');
+
+    document.getElementById('pageTitle')
+        .textContent =
+            cat === 'all'
+                ? 'Semua Komponen'
+                : cat.toUpperCase();
+
+    document.getElementById('pageSubtitle')
+        .textContent =
+            cat === 'all'
+                ? 'Pilih komponen terbaik untuk build kamu'
+                : `Menampilkan kategori ${cat}`;
+
+    applyFilters();
+}
+
+/* =========================
+   SEARCH PRODUCT
+========================= */
+
+function filterProducts(val) {
+
+    currentSearch =
+        val.toLowerCase();
+
+    visibleCount = BATCH;
+
+    applyFilters();
+}
+
+/* =========================
+   SORT PRODUCT
+========================= */
+
+function sortProducts(val) {
+
+    currentSort = val;
+
+    applyFilters();
+}
+
+/* =========================
+   VIEW MODE
+========================= */
+
+function setView(view) {
+
+    const grid =
+        document.getElementById('productGrid');
+
+    if(view === 'list') {
+
+        grid.classList.add('list-view');
+
+        document.getElementById('listBtn')
+            .classList.add('active');
+
+        document.getElementById('gridBtn')
+            .classList.remove('active');
+
+    } else {
+
+        grid.classList.remove('list-view');
+
+        document.getElementById('gridBtn')
+            .classList.add('active');
+
+        document.getElementById('listBtn')
+            .classList.remove('active');
+    }
+}
+
+/* =========================
+   LOAD MORE
+========================= */
+
+function loadMore() {
+
+    visibleCount += BATCH;
+
+    applyFilters();
+}
+
+/* =========================
+   FILTER CATEGORY
+========================= */
+
+function filterCategories(val) {
+
+    val = val.toLowerCase();
+
+    document.querySelectorAll('.cat-link')
+        .forEach(link => {
+
+            const cat =
+                (link.dataset.cat || '')
+                .toLowerCase();
+
+            if(cat === 'all') {
+                link.style.display = '';
+                return;
+            }
+
+            link.style.display =
+                cat.includes(val)
+                    ? ''
+                    : 'none';
+        });
+}
+
+/* =========================
+   URL PARAM
+========================= */
+
+(function () {
+
+    const params =
+        new URLSearchParams(window.location.search);
+
+    const catParam =
+        params.get('cat');
+
+    const searchParam =
+        params.get('search');
+
+    /* SEARCH */
+    if(searchParam) {
+
+        currentSearch =
+            searchParam.toLowerCase();
+
+        const mobileInput =
+            document.getElementById(
+                'mobileSearchInput'
+            );
+
+        if(mobileInput) {
+            mobileInput.value = searchParam;
+        }
+    }
+
+    /* CATEGORY */
+    if(catParam) {
+
+        const links =
+            document.querySelectorAll('.cat-link');
+
         let matched = null;
 
         links.forEach(link => {
-            if (link.dataset.cat &&
-                link.dataset.cat.toLowerCase() === catParam.toLowerCase()) {
+
+            const cat =
+                (link.dataset.cat || '')
+                .toLowerCase();
+
+            if(cat === catParam.toLowerCase()) {
                 matched = link;
             }
+
         });
 
-        if (matched) {
-            matched.click(); // trigger selectCategory() sekaligus update UI
-            // Scroll sidebar ke item yang aktif (mobile)
+        if(matched) {
+
+            selectCategory(
+                catParam.toLowerCase(),
+                matched
+            );
+
             matched.scrollIntoView({
                 behavior: 'smooth',
-                block: 'nearest',
                 inline: 'center'
             });
         }
-    })();
-
-    /* ── Helpers ── */
-    function allCards() {
-        return Array.from(document.querySelectorAll('#productGrid .prod-card'));
     }
 
-    function allBsCards() {
-        return Array.from(document.querySelectorAll('#bsTrack .bs-card'));
-    }
-
-    function applyFilters() {
-        const cards = allCards();
-
-        /* 1. Filter berdasarkan kategori DAN search */
-        let matched = cards.filter(card => {
-            const catOk = currentCat === 'all' || card.dataset.cat === currentCat;
-            const nameOk = (card.dataset.name || '').includes(currentSearch.toLowerCase());
-            return catOk && nameOk;
-        });
-
-        /* 2. Sort */
-        if (currentSort !== 'default') {
-            matched.sort((a, b) => {
-                const pa = parseFloat(a.dataset.price) || 0;
-                const pb = parseFloat(b.dataset.price) || 0;
-                const na = a.dataset.name || '';
-                const nb = b.dataset.name || '';
-                if (currentSort === 'price-asc') return pa - pb;
-                if (currentSort === 'price-desc') return pb - pa;
-                if (currentSort === 'name-asc') return na.localeCompare(nb);
-                if (currentSort === 'name-desc') return nb.localeCompare(na);
-                return 0;
-            });
-            /* Re-append dalam urutan sort */
-            const grid = document.getElementById('productGrid');
-            matched.forEach(c => grid.appendChild(c));
-        }
-
-        /* 3. Tampil / sembunyikan */
-        cards.forEach(c => {
-            const inMatched = matched.includes(c);
-            c.style.display = inMatched ? '' : 'none';
-        });
-
-        /* 4. Update hasil count */
-        document.getElementById('visibleCount').textContent = matched.length;
-
-        /* 5. Load more */
-        document.getElementById('loadMoreWrap').style.display =
-            matched.length > visibleCount ? 'block' : 'none';
-
-        /* 6. Filter best seller */
-        allBsCards().forEach(c => {
-            c.style.display = (currentCat === 'all' || c.dataset.cat === currentCat) ? '' : 'none';
-        });
-
-        /* 7. Empty state */
-        const grid = document.getElementById('productGrid');
-        let emptyEl = grid.querySelector('.empty-state');
-        if (matched.length === 0) {
-            if (!emptyEl) {
-                emptyEl = document.createElement('div');
-                emptyEl.className = 'empty-state';
-                emptyEl.innerHTML = `
-                    <div class="empty-state-icon">🔍</div>
-                    <div class="empty-state-title">Produk Tidak Ditemukan</div>
-                    <div class="empty-state-sub">Coba kata kunci atau kategori lain.</div>`;
-                grid.appendChild(emptyEl);
-            }
-        } else if (emptyEl) {
-            emptyEl.remove();
-        }
-    }
-
-    function selectCategory(cat, el) {
-        currentCat = cat;
-        visibleCount = BATCH;
-
-        /* Update active link */
-        document.querySelectorAll('.cat-link').forEach(l => l.classList.remove('active'));
-        el.classList.add('active');
-
-        /* Update heading */
-        document.getElementById('pageTitle').textContent =
-            cat === 'all' ? 'Semua Komponen' : cat;
-        document.getElementById('pageSubtitle').textContent =
-            cat === 'all' ?
-            'Pilih komponen terbaik untuk build kamu' :
-            `Menampilkan semua produk kategori ${cat}`;
-
-        applyFilters();
-    }
-
-    function filterProducts(val) {
-        currentSearch = val;
-        visibleCount = BATCH;
-        applyFilters();
-    }
-
-    function sortProducts(val) {
-        currentSort = val;
-        applyFilters();
-    }
-
-    function setView(v) {
-        const grid = document.getElementById('productGrid');
-        if (v === 'list') {
-            grid.classList.add('list-view');
-            document.getElementById('listBtn').classList.add('active');
-            document.getElementById('gridBtn').classList.remove('active');
-        } else {
-            grid.classList.remove('list-view');
-            document.getElementById('gridBtn').classList.add('active');
-            document.getElementById('listBtn').classList.remove('active');
-        }
-    }
-
-    function loadMore() {
-        visibleCount += BATCH;
-        applyFilters();
-    }
-
-    function filterCategories(val) {
-        document.querySelectorAll('.cat-link:not([data-cat="all"])').forEach(l => {
-            const label = l.querySelector('.cat-link-label').textContent.toLowerCase();
-            l.style.display = label.includes(val.toLowerCase()) ? '' : 'none';
-        });
-    }
-
-    /* ── Drag scroll sidebar ── */
-    const catList = document.getElementById('catList');
-    let isDown = false,
-        startX, scrollLeft;
-    catList.addEventListener('mousedown', e => {
-        isDown = true;
-        startX = e.pageX - catList.offsetLeft;
-        scrollLeft = catList.scrollLeft;
-    });
-    catList.addEventListener('mouseleave', () => {
-        isDown = false;
-    });
-    catList.addEventListener('mouseup', () => {
-        isDown = false;
-    });
-    catList.addEventListener('mousemove', e => {
-        if (!isDown) return;
-        e.preventDefault();
-        catList.scrollLeft = scrollLeft - (e.pageX - catList.offsetLeft - startX) * 1.5;
-    });
-
-    /* ── Init ── */
     applyFilters();
+
+})();
+
+/* =========================
+   DRAG SCROLL MOBILE
+========================= */
+
+const catList =
+    document.getElementById('catList');
+
+let isDown = false;
+let startX;
+let scrollLeft;
+
+catList.addEventListener('mousedown', e => {
+
+    isDown = true;
+
+    startX =
+        e.pageX - catList.offsetLeft;
+
+    scrollLeft =
+        catList.scrollLeft;
+});
+
+catList.addEventListener('mouseleave', () => {
+    isDown = false;
+});
+
+catList.addEventListener('mouseup', () => {
+    isDown = false;
+});
+
+catList.addEventListener('mousemove', e => {
+
+    if(!isDown) return;
+
+    e.preventDefault();
+
+    const x =
+        e.pageX - catList.offsetLeft;
+
+    const walk =
+        (x - startX) * 1.5;
+
+    catList.scrollLeft =
+        scrollLeft - walk;
+});
+
+/* TOUCH MOBILE */
+/* karena manusia suka geser kategori pakai jempol. Evolusi milyaran tahun dipakai buat scroll komponen VGA. */
+
+let touchStartX = 0;
+let touchScrollLeft = 0;
+
+catList.addEventListener('touchstart', e => {
+
+    touchStartX =
+        e.touches[0].pageX;
+
+    touchScrollLeft =
+        catList.scrollLeft;
+});
+
+catList.addEventListener('touchmove', e => {
+
+    const x =
+        e.touches[0].pageX;
+
+    const walk =
+        (x - touchStartX) * 1.5;
+
+    catList.scrollLeft =
+        touchScrollLeft - walk;
+});
+
 </script>
 
 @endsection

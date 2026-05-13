@@ -9,49 +9,69 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\MapController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminOrderController;
 use App\Http\Controllers\AdminProductController;
 
 /*
 |--------------------------------------------------------------------------
-| PUBLIC ROUTE (BISA DIAKSES SEMUA)
+| PUBLIC ROUTES
 |--------------------------------------------------------------------------
 */
 
-// HOME & PRODUCT
+// HOME
 Route::get('/', [ProductController::class, 'index']);
 Route::get('/product/{id}', [ProductController::class, 'show']);
 Route::get('/komponen', [ProductController::class, 'komponen']);
-// PUBLIC ROUTE
-  Route::get('/cart', [CartController::class, 'index']);
-    Route::post('/cart/add', [CartController::class, 'add']);
-    Route::post('/cart/remove', [CartController::class, 'remove']);
-    Route::post('/cart/remove-selected', [CartController::class, 'removeSelected']); // ← hapus terpilih
-    Route::post('/cart/clear', [CartController::class, 'clear']);
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-Route::post('/builder/save', [BuilderController::class, 'save']);
-    Route::post('/builder/add-to-cart', [BuilderController::class, 'addToCart']);
-Route::post('/checkout/prepare', [CheckoutController::class, 'prepare']); // simpan item terpilih ke session
-    Route::get('/transaksi', [CheckoutController::class, 'index']);            // halaman checkout
-    Route::post('/checkout/process', [CheckoutController::class, 'process']); // proses bayar & hapus dari cart
- 
-// BUILDER (VIEW)
+
+
+// BUILDER
 Route::get('/builder', [BuilderController::class, 'index']);
 Route::post('/builder/calc', [BuilderController::class, 'calc']);
+Route::post('/builder/save', [BuilderController::class, 'save']);
+Route::post('/builder/add-to-cart', [BuilderController::class, 'addToCart']);
+
 
 // USER PAGE
 Route::get('/user', [ProductController::class, 'user']);
 
-// CHAT (AMBIL DATA)
-Route::get('/chat/get', [ChatController::class, 'get']);
 
+// MAP
 Route::get('/map', [MapController::class, 'index']);
 Route::get('/api/markers', [MapController::class, 'getMarkers']);
 
+
 /*
 |--------------------------------------------------------------------------
-| AUTH ROUTE (HANYA UNTUK GUEST)
+| CART
 |--------------------------------------------------------------------------
 */
+
+Route::get('/cart', [CartController::class, 'index']);
+Route::post('/cart/add', [CartController::class, 'add']);
+Route::post('/cart/remove', [CartController::class, 'remove']);
+Route::post('/cart/remove-selected', [CartController::class, 'removeSelected']);
+Route::post('/cart/clear', [CartController::class, 'clear']);
+
+
+/*
+|--------------------------------------------------------------------------
+| CHECKOUT
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+Route::post('/checkout/prepare', [CheckoutController::class, 'prepare']);
+Route::post('/checkout/process', [CheckoutController::class, 'process']);
+
+Route::get('/transaksi', [CheckoutController::class, 'index']);
+
+
+/*
+|--------------------------------------------------------------------------
+| AUTH USER
+|--------------------------------------------------------------------------
+*/
+
 Route::middleware('guest')->group(function () {
 
     Route::get('/login', function () {
@@ -70,65 +90,154 @@ Route::middleware('guest')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| PROTECTED ROUTE (WAJIB LOGIN)
+| USER AREA
 |--------------------------------------------------------------------------
 */
+
 Route::middleware('auth')->group(function () {
 
-    // CHAT User (KIRIM PESAN)
+    /*
+    |--------------------------------------------------------------------------
+    | CHAT USER
+    |--------------------------------------------------------------------------
+    */
+
+    // halaman chat
     Route::get('/chat', [ChatController::class, 'index']);
-    Route::post('/chat/send', [ChatController::class, 'send']);
+
+    // ambil semua pesan user login
     Route::get('/chat/messages', [ChatController::class, 'messages']);
-    Route::get('/chat/get', [ChatController::class, 'get']);
 
-    // ADMIN CHAT
-    Route::get('/admin/chat/{userId}', [ChatController::class, 'adminGetChat']);
-    Route::post('/admin/chat/reply/{userId}', [ChatController::class, 'reply']);
+    // kirim pesan user
+    Route::post('/chat/send', [ChatController::class, 'send']);
 
-    // CART ← tambah route /cart/add di sini
-    // Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-    // Route::get('/cart', [CartController::class, 'index']);
-    //            // ← INI YANG DITAMBAHKAN
-    // Route::post('/cart/remove', [CartController::class, 'remove']);
-    // Route::post('/cart/clear', [CartController::class, 'clear']);
+    /*
+    |--------------------------------------------------------------------------
+    | LOGOUT USER
+    |--------------------------------------------------------------------------
+    */
 
-    // BUILDER ACTION
-    // Route::post('/builder/save', [BuilderController::class, 'save']);
-    // Route::post('/builder/add-to-cart', [BuilderController::class, 'addToCart']);
-
-    // CHECKOUT
-    // Route::get('/transaksi', [CheckoutController::class, 'index']);
-    // Route::post('/checkout/process', [CheckoutController::class, 'process']);
-
-    // LOGOUT
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::post('/logout', [AuthController::class, 'logout'])
+        ->name('logout');
 });
 
-Route::middleware('admin')
-    ->prefix('admin')
-    ->group(function () {
+ /*
+|--------------------------------------------------------------------------
+| ADMIN
+|--------------------------------------------------------------------------
+*/
 
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
+Route::prefix('admin')->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | LOGIN ADMIN
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/login', [AdminController::class, 'loginPage'])
+        ->name('admin.login');
+
+    Route::post('/login', [AdminController::class, 'login']);
+
+    Route::post('/logout', [AdminController::class, 'logout']);
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN AREA
+    |--------------------------------------------------------------------------
+    */
+
+    Route::middleware('auth:admin')->group(function () {
+
+        /*
+        |--------------------------------------------------------------------------
+        | DASHBOARD
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/dashboard',
+            [AdminController::class, 'dashboard']);
+
+        /*
+        |--------------------------------------------------------------------------
+        | CHAT ADMIN
+        |--------------------------------------------------------------------------
+        */
+
+        // halaman chat admin
+        Route::get('/chat',
+            [ChatController::class, 'adminIndex']);
+
+        // ambil pesan user
+        Route::get('/chat/messages/{userId}',
+            [ChatController::class, 'adminMessages']);
+
+        // balas pesan
+        Route::post('/chat/reply/{userId}',
+            [ChatController::class, 'reply']);
+
+        /*
+        |--------------------------------------------------------------------------
+        | CRUD PRODUCT
+        |--------------------------------------------------------------------------
+        */
+
+        Route::prefix('products')
+            ->name('admin.products.')
+            ->group(function () {
+
+            // list produk
+            Route::get('/',
+                [AdminProductController::class, 'index'])
+                ->name('index');
+
+            // halaman tambah produk
+            Route::get('/create',
+                [AdminProductController::class, 'create'])
+                ->name('create');
+
+            // simpan produk
+            Route::post('/store',
+                [AdminProductController::class, 'store'])
+                ->name('store');
+
+            // halaman edit
+            Route::get('/edit/{id}',
+                [AdminProductController::class, 'edit'])
+                ->name('edit');
+
+            // update produk
+            Route::post('/update/{id}',
+                [AdminProductController::class, 'update'])
+                ->name('update');
+
+            // hapus produk
+            Route::post('/delete/{id}',
+                [AdminProductController::class, 'delete'])
+                ->name('destroy');
+        });
     });
 
-    Route::get('/chat', [ChatController::class, 'adminIndex']);
-    Route::get('/chat/messages/{userId}', [ChatController::class, 'adminMessages']);
-    Route::post('/chat/reply/{userId}', [ChatController::class, 'reply']);
+    Route::get('/admin/products',
+    [AdminProductController::class, 'index']);
+
+
+    Route::prefix('orders')
+    ->name('admin.orders.')
+    ->group(function () {
+
+    Route::get('/',
+        [AdminOrderController::class, 'index'])
+        ->name('index');
+
+    Route::get('/{id}',
+        [AdminOrderController::class, 'show'])
+        ->name('show');
+
+    Route::post('/status/{id}',
+        [AdminOrderController::class, 'updateStatus'])
+        ->name('status');
+});
 });
 
-
-// ADMIN LOGIN
-Route::prefix('admin')->group(function () {
-    Route::get('/login', [AdminController::class, 'loginForm']);
-    Route::post('/login', [AdminController::class, 'login']);
-});
-
-
-// PRODUCT CRUD ADMIN
-Route::get('/products', [AdminProductController::class, 'index']);
-Route::get('/products/create', [AdminProductController::class, 'create']);
-Route::post('/products/store', [AdminProductController::class, 'store']);
-Route::get('/products/edit/{id}', [AdminProductController::class, 'edit']);
-Route::post('/products/update/{id}', [AdminProductController::class, 'update']);
-Route::post('/products/delete/{id}', [AdminProductController::class, 'delete']);

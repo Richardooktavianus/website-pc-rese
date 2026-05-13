@@ -18,33 +18,62 @@ class ChatController extends Controller
         return view('chat.index');
     }
 
-    public function messages()
-    {
-        return response()->json(
+ public function messages()
+{
+    if (!auth()->check()) {
 
-            Chat::where('user_id', Auth::id())
-                ->orderBy('created_at')
-                ->get()
-
-        );
+        return response()->json([]);
     }
 
+    $messages = \App\Models\Chat::where(
+        'user_id',
+        auth()->id()
+    )
+    ->orderBy('id', 'asc')
+    ->get();
+
+    return response()->json($messages);
+}
+
     public function send(Request $request)
-    {
+{
+    try {
+
+        // validasi
         $request->validate([
-            'message' => 'required'
+            'message' => 'required|string'
         ]);
 
-        Chat::create([
-            'user_id' => Auth::id(),
-            'message' => $request->message,
-            'sender' => 'user',
+        // cek login
+        if (!auth()->check()) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'User belum login'
+            ], 401);
+
+        }
+
+        // simpan chat
+        \App\Models\Chat::create([
+            'user_id' => auth()->id(),
+            'sender'  => 'user',
+            'message' => $request->message
         ]);
 
         return response()->json([
             'success' => true
         ]);
+
+    } catch (\Exception $e) {
+
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage()
+        ], 500);
+
     }
+}
 
     // =========================
     // ADMIN CHAT
@@ -86,20 +115,16 @@ class ChatController extends Controller
         );
     }
 
-    public function reply(Request $request, $userId)
-    {
-        $request->validate([
-            'message' => 'required'
-        ]);
+public function reply(Request $request, $userId)
+{
+    Chat::create([
+        'user_id' => $userId,
+        'sender' => 'admin',
+        'message' => $request->message
+    ]);
 
-        Chat::create([
-            'user_id' => $userId,
-            'message' => $request->message,
-            'sender' => 'admin',
-        ]);
-
-        return response()->json([
-            'success' => true
-        ]);
-    }
+    return response()->json([
+        'success' => true
+    ]);
+}
 }

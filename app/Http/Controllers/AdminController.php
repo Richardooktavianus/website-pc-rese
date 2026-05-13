@@ -3,7 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Product;
+use App\Models\User;
+use App\Models\Chat;
+use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -41,5 +46,40 @@ class AdminController extends Controller
         Auth::guard('admin')->logout();
 
         return redirect('/admin/login');
+    }
+
+
+        public function dashboard()
+    {
+        $totalUser = User::count();
+
+        $totalProduct = Product::count();
+
+        $totalChat = Chat::count();
+
+        // TOTAL ORDER
+        $totalPenjualan = Order::count();
+
+        // TOTAL PENDAPATAN
+        $totalPendapatan = Order::sum('total_price');
+
+        // GRAFIK 7 HARI
+        $salesData = Order::select(
+                DB::raw('DATE(created_at) as tanggal'),
+                DB::raw('SUM(total_price) as total')
+            )
+            ->groupBy('tanggal')
+            ->orderBy('tanggal', 'ASC')
+            ->take(7)
+            ->get();
+
+        return view('admin.dashboard', compact(
+            'totalUser',
+            'totalProduct',
+            'totalChat',
+            'totalPenjualan',
+            'totalPendapatan',
+            'salesData'
+        ));
     }
 }
