@@ -1350,7 +1350,7 @@
     <a href="{{ url('/transaksi') }}" class="{{ request()->is('transaksi*')  ? 'active' : '' }}" data-i18n="nav.transaksi">Transaksi</a>
     <a href="{{ url('/builder') }}"  class="{{ request()->is('builder*')    ? 'active' : '' }}" data-i18n="nav.builder">Builder</a>
     <a href="{{ url('/cart') }}"     class="{{ request()->is('cart*')       ? 'active' : '' }}" data-i18n="nav.keranjang">Keranjang</a>
-    <a href="{{ url('/promo') }}"    class="{{ request()->is('promo*')      ? 'active' : '' }}" data-i18n="nav.promo">Promo</a>
+    <a href="{{ url('/informasi') }}"    class="{{ request()->is('informasi*')      ? 'active' : '' }}" data-i18n="nav.promo">Informasi</a>
   </div>
 
   <!-- CONTENT -->

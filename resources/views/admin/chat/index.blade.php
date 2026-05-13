@@ -1,59 +1,226 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
+
 <head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Admin Chat</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <style>
+
+        body{
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        ::-webkit-scrollbar{
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb{
+            background: #cbd5e1;
+            border-radius: 20px;
+        }
+
+    </style>
+
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-slate-100">
 
-<div class="flex h-screen">
+<div class="flex min-h-screen">
 
-    <!-- SIDEBAR USER -->
-    <div class="w-[350px] bg-white border-r overflow-y-auto">
+    <!-- SIDEBAR -->
+    <aside class="w-72 bg-slate-950 text-white p-6 flex flex-col shadow-2xl">
 
-        <div class="p-5 border-b font-bold text-xl">
-            Customer Chat
+        <!-- LOGO -->
+        <div class="flex items-center gap-4 mb-12">
+
+            <div class="w-14 h-14 rounded-2xl
+                        bg-indigo-600
+                        flex items-center
+                        justify-center
+                        text-2xl font-bold">
+
+                A
+
+            </div>
+
+            <div>
+
+                <h1 class="text-2xl font-extrabold">
+                    Admin Panel
+                </h1>
+
+                <p class="text-slate-400 text-sm">
+                    PC Rakit Store
+                </p>
+
+            </div>
+
         </div>
 
-        @foreach($users as $user)
+        <!-- MENU -->
+        <nav class="space-y-3">
 
-            <div
-                onclick="openChat(
-                    {{ $user->id }},
-                    '{{ $user->name }}'
-                )"
+            <a href="/admin/dashboard"
+               class="flex items-center gap-4
+                      hover:bg-slate-800
+                      transition
+                      px-5 py-4
+                      rounded-2xl">
 
-                class="p-4 border-b cursor-pointer
-                       hover:bg-gray-100">
+                📊
 
-                <div class="flex items-center gap-3">
+                <span class="font-semibold">
+                    Dashboard
+                </span>
 
-                    <div class="w-12 h-12 rounded-full
-                                bg-black text-white
-                                flex items-center
-                                justify-center font-bold">
+            </a>
 
-                        {{ strtoupper(substr($user->name,0,1)) }}
+            <a href="/admin/products"
+               class="flex items-center gap-4
+                      hover:bg-slate-800
+                      transition
+                      px-5 py-4
+                      rounded-2xl">
 
-                    </div>
+                📦
 
-                    <div class="flex-1">
+                <span class="font-semibold">
+                    Produk
+                </span>
 
-                        <div class="font-semibold">
+            </a>
 
-                            {{ $user->name }}
+            <a href="/admin/orders"
+               class="flex items-center gap-4
+                      hover:bg-slate-800
+                      transition
+                      px-5 py-4
+                      rounded-2xl">
+
+                🛒
+
+                <span class="font-semibold">
+                    Orders
+                </span>
+
+            </a>
+
+            <a href="/admin/chat"
+               class="flex items-center gap-4
+                      bg-indigo-600
+                      px-5 py-4
+                      rounded-2xl
+                      shadow-lg shadow-indigo-600/20">
+
+                💬
+
+                <span class="font-semibold">
+                    Chat User
+                </span>
+
+            </a>
+
+        </nav>
+
+        <!-- LOGOUT -->
+        <div class="mt-auto">
+
+            <form action="/admin/logout"
+                  method="POST">
+
+                @csrf
+
+                <button
+                    class="w-full bg-red-500
+                           hover:bg-red-600
+                           transition
+                           py-3 rounded-2xl
+                           font-bold">
+
+                    Logout
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </aside>
+
+    <!-- CHAT AREA -->
+    <div class="flex-1 flex">
+
+        <!-- USER LIST -->
+        <div class="w-[360px]
+                    bg-white border-r
+                    border-slate-200
+                    flex flex-col">
+
+            <!-- HEADER -->
+            <div class="p-6 border-b bg-white">
+
+                <h1 class="text-2xl font-extrabold text-slate-900">
+                    Customer Chat
+                </h1>
+
+                <p class="text-slate-400 text-sm mt-1">
+                    Semua percakapan customer
+                </p>
+
+            </div>
+
+            <!-- USERS -->
+            <div class="flex-1 overflow-y-auto">
+
+                @foreach($users as $user)
+
+                <div
+                    onclick="openChat(
+                        {{ $user->id }},
+                        '{{ $user->name }}'
+                    )"
+
+                    class="p-5 border-b border-slate-100
+                           hover:bg-slate-50
+                           cursor-pointer transition">
+
+                    <div class="flex items-center gap-4">
+
+                        <div class="w-14 h-14 rounded-2xl
+                                    bg-indigo-600 text-white
+                                    flex items-center justify-center
+                                    font-bold text-lg shadow">
+
+                            {{ strtoupper(substr($user->name,0,1)) }}
 
                         </div>
 
-                        <div class="text-sm text-gray-500 truncate">
+                        <div class="flex-1 min-w-0">
 
-                            {{ optional(
-                                $user->chats->first()
-                            )->message }}
+                            <div class="font-bold text-slate-900">
+
+                                {{ $user->name }}
+
+                            </div>
+
+                            <div class="text-sm text-slate-400 truncate mt-1">
+
+                                {{ optional(
+                                    $user->chats->first()
+                                )->message }}
+
+                            </div>
 
                         </div>
 
@@ -61,52 +228,84 @@
 
                 </div>
 
+                @endforeach
+
             </div>
 
-        @endforeach
-
-    </div>
-
-    <!-- CHAT ROOM -->
-    <div class="flex-1 flex flex-col">
-
-        <!-- HEADER -->
-        <div id="chatHeader"
-             class="h-[80px] bg-white border-b
-                    flex items-center px-6
-                    text-xl font-bold">
-
-            Pilih chat user
-
         </div>
 
-        <!-- MESSAGE -->
-        <div id="chatMessages"
-             class="flex-1 overflow-y-auto
-                    p-6 space-y-4">
+        <!-- CHAT ROOM -->
+        <div class="flex-1 flex flex-col">
 
-        </div>
+            <!-- HEADER -->
+            <div id="chatHeader"
+                 class="h-[90px]
+                        bg-white border-b
+                        border-slate-200
+                        px-8
+                        flex items-center">
 
-        <!-- INPUT -->
-        <div class="bg-white border-t p-4 flex gap-3">
+                <div>
 
-            <input
-                type="text"
-                id="messageInput"
-                placeholder="Ketik balasan..."
+                    <h2 class="text-2xl font-extrabold text-slate-900">
+                        Pilih chat user
+                    </h2>
 
-                class="flex-1 border rounded-xl
-                       px-4 py-3">
+                    <p class="text-slate-400 text-sm">
+                        Balas pesan customer secara realtime
+                    </p>
 
-            <button
-                onclick="sendReply()"
+                </div>
 
-                class="bg-black text-white
-                       px-6 rounded-xl">
+            </div>
 
-                Kirim
+            <!-- MESSAGE -->
+            <div id="chatMessages"
+                 class="flex-1 overflow-y-auto
+                        p-8 space-y-5
+                        bg-slate-100">
 
-            </button>
+                <!-- CHAT HERE -->
+
+            </div>
+
+            <!-- INPUT -->
+            <div class="bg-white border-t
+                        border-slate-200
+                        p-5">
+
+                <div class="flex items-center gap-4">
+
+                    <input
+                        type="text"
+                        id="messageInput"
+                        placeholder="Ketik balasan..."
+
+                        class="flex-1 bg-slate-100
+                               border-none outline-none
+                               rounded-2xl px-6 py-4
+                               focus:ring-2
+                               focus:ring-indigo-500">
+
+                    <button
+                        onclick="sendReply()"
+
+                        class="bg-indigo-600
+                               hover:bg-indigo-700
+                               transition
+                               text-white
+                               px-8 py-4
+                               rounded-2xl
+                               font-bold shadow-lg
+                               shadow-indigo-600/20">
+
+                        Kirim
+
+                    </button>
+
+                </div>
+
+            </div>
 
         </div>
 
@@ -127,7 +326,34 @@ async function openChat(userId, userName)
     currentUserId = userId;
 
     document.getElementById('chatHeader')
-        .innerHTML = userName;
+        .innerHTML = `
+
+            <div class="flex items-center gap-4">
+
+                <div class="w-14 h-14 rounded-2xl
+                            bg-indigo-600 text-white
+                            flex items-center justify-center
+                            font-bold text-lg">
+
+                    ${userName.charAt(0).toUpperCase()}
+
+                </div>
+
+                <div>
+
+                    <h2 class="text-2xl font-extrabold text-slate-900">
+                        ${userName}
+                    </h2>
+
+                    <p class="text-green-500 text-sm font-medium">
+                        ● Online
+                    </p>
+
+                </div>
+
+            </div>
+
+        `;
 
     loadMessages();
 }
@@ -152,23 +378,27 @@ async function loadMessages()
 
         html += `
 
-            <div class="${
+            <div class="flex ${
                 msg.sender == 'admin'
-                ? 'text-right'
-                : 'text-left'
+                ? 'justify-end'
+                : 'justify-start'
             }">
 
-                <div class="inline-block
-                            px-4 py-2 rounded-2xl
-                            max-w-[70%]
+                <div class="${
+                    msg.sender == 'admin'
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-white text-slate-800 border border-slate-200'
+                }
 
-                            ${
-                                msg.sender == 'admin'
-                                ? 'bg-black text-white'
-                                : 'bg-white border'
-                            }">
+                px-5 py-4 rounded-3xl
+                max-w-[70%]
+                shadow-sm">
 
-                    ${msg.message}
+                    <div class="text-sm leading-relaxed">
+
+                        ${msg.message}
+
+                    </div>
 
                 </div>
 
@@ -227,10 +457,18 @@ async function sendReply()
     loadMessages();
 }
 
-// =========================
-// AUTO REFRESH
-// =========================
+// ENTER SEND
+document.getElementById(
+    'messageInput'
+).addEventListener('keypress', function(e){
 
+    if(e.key === 'Enter'){
+        sendReply();
+    }
+
+});
+
+// AUTO REFRESH
 setInterval(loadMessages, 2000);
 
 </script>

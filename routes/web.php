@@ -22,6 +22,9 @@ use App\Http\Controllers\AdminProductController;
 Route::get('/', [ProductController::class, 'index']);
 Route::get('/product/{id}', [ProductController::class, 'show']);
 Route::get('/komponen', [ProductController::class, 'komponen']);
+Route::get('/informasi', function () {
+    return view('informasi');
+});
 
 
 // BUILDER
